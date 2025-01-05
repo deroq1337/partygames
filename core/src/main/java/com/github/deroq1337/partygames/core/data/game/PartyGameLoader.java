@@ -94,7 +94,10 @@ public class PartyGameLoader {
     }
 
     private @NotNull URLClassLoader getClassLoader(@NotNull File file) throws IOException {
-        return new URLClassLoader(new URL[]{file.toURI().toURL()}, getClass().getClassLoader());
+        return new URLClassLoader(
+            new URL[]{file.toURI().toURL()}, 
+            getClass().getClassLoader()
+        );
     }
 
     private @NotNull Class<?> loadClass(@NotNull String className) {
