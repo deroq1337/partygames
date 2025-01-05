@@ -1,0 +1,4 @@
+name: TestGame
+version: 1.0
+author: deroq
+main: com.github.deroq1337.partygames.testgame.TestGame
