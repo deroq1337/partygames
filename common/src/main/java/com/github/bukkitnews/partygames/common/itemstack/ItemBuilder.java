@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
@@ -83,6 +84,30 @@ public class ItemBuilder {
     public ItemBuilder setGlowing() {
         this.itemMeta.addEnchant(Enchantment.UNBREAKING, 1, true);
         this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        return this;
+    }
+
+    /**
+     * Sets the custom model data for the item. This is used for custom textures in resource packs.
+     *
+     * @param data The custom model data to set.
+     * @return The current ItemBuilder instance for method chaining.
+     */
+    public ItemBuilder setCustomModelData(int data) {
+        this.itemMeta.setCustomModelData(data);
+        return this;
+    }
+
+    /**
+     * Sets the durability of the item (how much damage it can take before breaking).
+     *
+     * @param durability The durability value to set.
+     * @return The current ItemBuilder instance for method chaining.
+     */
+    public ItemBuilder setDurability(int durability) {
+        if (this.itemMeta instanceof Damageable) {
+            ((Damageable) this.itemMeta).setDamage(durability);
+        }
         return this;
     }
 
