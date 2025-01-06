@@ -10,6 +10,15 @@ public interface CountdownableState {
     boolean canStart();
 
     default void check() {
+        Countdown countdown = getCountdown();
+        if (countdown.isStarted() == canStart()) {
+            return;
+        }
 
+        if (countdown.isStarted()) {
+            countdown.cancel();
+        } else {
+            countdown.start();
+        }
     }
 }
