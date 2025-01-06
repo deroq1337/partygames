@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public interface Language {
+public interface LanguageManager {
 
     @NotNull CompletableFuture<Void> loadMessages();
 

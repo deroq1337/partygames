@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.core;
 
-import com.github.deroq1337.partygames.core.data.game.PartyGameLoader;
+import com.github.deroq1337.partygames.core.data.game.loader.PartyGameLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;

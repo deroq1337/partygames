@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game;
+package com.github.deroq1337.partygames.core.data.game.loader;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

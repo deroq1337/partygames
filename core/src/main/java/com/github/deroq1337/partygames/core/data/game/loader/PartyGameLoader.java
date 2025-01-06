@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game;
+package com.github.deroq1337.partygames.core.data.game.loader;
 
 import com.github.deroq1337.partygames.api.PartyGame;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +62,10 @@ public class PartyGameLoader {
         PartyGame game = loadedGames.get(name);
         game.onUnload();
         System.out.println("Unloaded game '" + name + "'");
+    }
+
+    public List<PartyGame> getGames() {
+        return new ArrayList<>(loadedGames.values());
     }
 
     private @NotNull List<File> findJars() {

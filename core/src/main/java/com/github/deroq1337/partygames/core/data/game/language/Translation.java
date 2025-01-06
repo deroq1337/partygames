@@ -1,4 +1,4 @@
-package com.github.bukkitnews.partygames.common.language;
+package com.github.deroq1337.partygames.core.data.game.language;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

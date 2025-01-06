@@ -1,6 +1,6 @@
-package com.github.bukkitnews.partygames.common.language;
+package com.github.deroq1337.partygames.core.data.game.language;
 
-import com.github.deroq1337.partygames.api.Language;
+import com.github.deroq1337.partygames.api.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -8,12 +8,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LanguageManager implements Language {
+public class DefaultLanguageManager implements LanguageManager {
 
     private final @NotNull Map<Locale, Translation> localeTranslationMap = new ConcurrentHashMap<>();
     private final @NotNull File messagesFolder;
 
-    public LanguageManager(@NotNull File messagesFolder) {
+    public DefaultLanguageManager(@NotNull File messagesFolder) {
         this.messagesFolder = messagesFolder;
         if (!messagesFolder.exists()) {
             messagesFolder.mkdirs();
