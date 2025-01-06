@@ -12,6 +12,7 @@
         <module>core</module>
         <module>test-game</module>
         <module>api</module>
+        <module>common</module>
     </modules>
 
     <properties>

@@ -41,8 +41,7 @@ public class PartyGameLoader {
 
         PartyGameManifest manifest = optionalManifest.get();
         String gameName = manifest.getName();
-        try {
-            URLClassLoader classLoader = getClassLoader(file);
+        try (URLClassLoader classLoader = getClassLoader(file)) {
             Class<?> mainClass = classLoader.loadClass(manifest.getMain());
             if (!PartyGame.class.isAssignableFrom(mainClass)) {
                 System.err.println("Main class of game '" + gameName + "' does not implement PartyGame");
