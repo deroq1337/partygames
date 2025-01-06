@@ -1,22 +1,20 @@
 package com.github.deroq1337.partygames.core;
 
-import com.github.deroq1337.partygames.core.data.game.loader.PartyGameLoader;
+import com.github.deroq1337.partygames.core.data.game.DefaultPartyGamesGame;
+import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
 
 public class PartyGames extends JavaPlugin {
 
-    private PartyGameLoader gameLoader;
+    private PartyGamesGame game;
 
     @Override
     public void onEnable() {
-        this.gameLoader = new PartyGameLoader(new File("plugins/partygames/games/"));
-        gameLoader.loadGames();
+        this.game = new DefaultPartyGamesGame();
     }
 
     @Override
     public void onDisable() {
-
+        game.getGameLoader().unloadGames();
     }
 }

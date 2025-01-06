@@ -16,6 +16,9 @@ public class DefaultPartyGamesGame implements PartyGamesGame {
 
     public DefaultPartyGamesGame() {
         this.gameLoader = new PartyGameLoader(new File("plugins/partygames/games/"));
+        gameLoader.loadGames();
+
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
+        languageManager.loadMessages();
     }
 }
