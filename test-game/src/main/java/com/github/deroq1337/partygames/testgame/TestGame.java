@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.testgame;
 
-import com.github.deroq1337.partygames.api.PartyGame;
+import com.github.deroq1337.partygames.api.game.PartyGame;
 
 public class TestGame implements PartyGame {
 

@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.loader;
 
-import com.github.deroq1337.partygames.api.PartyGame;
-import lombok.RequiredArgsConstructor;
+import com.github.deroq1337.partygames.api.game.PartyGame;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,11 +13,15 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-@RequiredArgsConstructor
 public class PartyGameLoader {
 
-    private final @NotNull File gameDirectory;
+    private final @NotNull File gamesDirectory;
     private final @NotNull Map<String, PartyGame> loadedGames = new HashMap<>();
+
+    public PartyGameLoader(@NotNull File gamesDirectory) {
+        this.gamesDirectory = gamesDirectory;
+        loadGames();
+    }
 
     public void loadGames() {
         findJars().forEach(this::loadGame);
@@ -69,7 +72,7 @@ public class PartyGameLoader {
     }
 
     private @NotNull List<File> findJars() {
-        return Optional.ofNullable(gameDirectory.listFiles())
+        return Optional.ofNullable(gamesDirectory.listFiles())
                 .map(files -> Arrays.stream(files)
                         .filter(file -> file.getName().endsWith(".jar"))
                         .toList())

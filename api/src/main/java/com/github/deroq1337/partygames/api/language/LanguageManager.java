@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.api;
+package com.github.deroq1337.partygames.api.language;
 
 
 import org.jetbrains.annotations.NotNull;

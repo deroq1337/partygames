@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.language;
 
-import com.github.deroq1337.partygames.api.LanguageManager;
+import com.github.deroq1337.partygames.api.language.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -18,6 +18,7 @@ public class DefaultLanguageManager implements LanguageManager {
         if (!messagesFolder.exists()) {
             messagesFolder.mkdirs();
         }
+        loadMessages();
     }
 
     @Override
