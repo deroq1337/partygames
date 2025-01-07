@@ -4,6 +4,7 @@ import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.state.CountdownableState;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.PartyGames;
+import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.countdowns.PartyGamesLobbyCountdown;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -13,14 +14,14 @@ import java.util.UUID;
 
 public class PartyGamesLobbyState extends PartyGamesState implements CountdownableState {
 
-    private final @NotNull PartyGames partyGames;
+    private final @NotNull PartyGamesGame game;
 
     @Getter
     private final @NotNull Countdown countdown;
 
-    public PartyGamesLobbyState(@NotNull PartyGames partyGames) {
-        this.partyGames = partyGames;
-        this.countdown = new PartyGamesLobbyCountdown(partyGames, this);
+    public PartyGamesLobbyState(@NotNull PartyGamesGame game) {
+        this.game = game;
+        this.countdown = new PartyGamesLobbyCountdown(game, this);
     }
 
     @Override

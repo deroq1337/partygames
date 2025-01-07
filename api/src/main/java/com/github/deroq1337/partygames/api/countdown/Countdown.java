@@ -57,7 +57,7 @@ public abstract class Countdown {
         this.running = true;
     }
 
-    protected void onEnd() {
+    public void onEnd() {
         cancel();
 
         gameState.leave();

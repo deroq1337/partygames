@@ -1,5 +1,6 @@
-package com.github.deroq1337.partygames.api.countdown;
+package com.github.deroq1337.partygames.core.data.game.tasks;
 
+import com.github.deroq1337.partygames.api.countdown.Countdown;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

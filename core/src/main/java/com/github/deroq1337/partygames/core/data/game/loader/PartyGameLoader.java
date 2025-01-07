@@ -1,6 +1,8 @@
 package com.github.deroq1337.partygames.core.data.game.loader;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
+import com.github.deroq1337.partygames.api.user.UserRegistry;
+import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
@@ -15,10 +17,12 @@ import java.util.jar.JarFile;
 
 public class PartyGameLoader {
 
+    private final @NotNull PartyGamesGame game;
     private final @NotNull File gamesDirectory;
     private final @NotNull Map<String, PartyGame> loadedGames = new HashMap<>();
 
-    public PartyGameLoader(@NotNull File gamesDirectory) {
+    public PartyGameLoader(@NotNull PartyGamesGame game, @NotNull File gamesDirectory) {
+        this.game = game;
         this.gamesDirectory = gamesDirectory;
         loadGames();
     }
@@ -51,7 +55,7 @@ public class PartyGameLoader {
                 return;
             }
 
-            PartyGame game = (PartyGame) mainClass.getDeclaredConstructor().newInstance();
+            PartyGame game = (PartyGame) mainClass.getDeclaredConstructor(UserRegistry.class).newInstance(this.game.getUserRegistry());
             game.onLoad();
             loadedGames.put(gameName, game);
             System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));

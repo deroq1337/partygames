@@ -1,13 +1,21 @@
 package com.github.deroq1337.partygames.api.game;
 
 import com.github.deroq1337.partygames.api.state.PartyGameState;
+import com.github.deroq1337.partygames.api.user.User;
+import com.github.deroq1337.partygames.api.user.UserRegistry;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-public interface PartyGame {
+@RequiredArgsConstructor
+@Getter
+public abstract class PartyGame {
 
-    void onLoad();
+    private final @NotNull UserRegistry<? extends User> userRegistry;
 
-    void onUnload();
+    public abstract void onLoad();
 
-    @NotNull PartyGameState getState();
+    public abstract void onUnload();
+
+    public abstract @NotNull PartyGameState getState();
 }
