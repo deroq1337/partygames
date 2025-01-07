@@ -65,4 +65,8 @@ public abstract class Countdown {
             ((PartyGamesState) gameState).getNextState().ifPresent(BaseState::enter);
         }
     }
+
+    public void decrementCurrentTick() {
+        this.currentTick--;
+    }
 }

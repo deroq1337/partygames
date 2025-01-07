@@ -24,5 +24,8 @@ public class CountdownTask implements Runnable {
         if (countdown.getSpecialTicks().contains(currentTick)) {
             countdown.onSpecialTick(currentTick);
         }
+
+        countdown.onTick();
+        countdown.decrementCurrentTick();
     }
 }
