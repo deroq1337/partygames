@@ -15,6 +15,6 @@ public class PartyGames extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        game.getGameLoader().unloadGames();
+
     }
 }
