@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game.loader;
+package com.github.deroq1337.partygames.core.data.game.provider;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
@@ -12,67 +12,60 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class PartyGameLoader {
+public class PartyGameProvider {
 
     private final @NotNull PartyGamesGame game;
     private final @NotNull File gamesDirectory;
-    private final @NotNull Map<String, PartyGame> loadedGames = new HashMap<>();
+    private final @NotNull Map<PartyGameManifest, File> foundGames = new ConcurrentHashMap<>();
 
-    public PartyGameLoader(@NotNull PartyGamesGame game, @NotNull File gamesDirectory) {
+    public PartyGameProvider(@NotNull PartyGamesGame game, @NotNull File gamesDirectory) {
         this.game = game;
         this.gamesDirectory = gamesDirectory;
-        loadGames();
+        findGames();
     }
 
-    public void loadGames() {
-        findJars().forEach(this::loadGame);
+    public void findGames() {
+        findJars().forEach(this::findGame);
     }
 
-    public void unloadGames() {
-        Iterator<String> iterator = loadedGames.keySet().iterator();
-        while (iterator.hasNext()) {
-            unloadGame(iterator.next());
-            iterator.remove();
-        }
-    }
-
-    private void loadGame(@NotNull File file) {
+    private void findGame(@NotNull File file) {
         Optional<PartyGameManifest> optionalManifest = getGameManifest(file);
         if (optionalManifest.isEmpty()) {
             System.err.println("File '" + file.getName() + "' does not have game manifest");
             return;
         }
 
+
         PartyGameManifest manifest = optionalManifest.get();
+        foundGames.put(manifest, file);
+        System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
+    }
+
+    public Optional<PartyGame> loadGame(@NotNull PartyGameManifest manifest) {
         String gameName = manifest.getName();
+        File file = Optional.ofNullable(foundGames.get(manifest))
+                .orElseThrow(() -> new NoSuchElementException("Game '" + gameName + "' was not found"));
+
         try (URLClassLoader classLoader = getClassLoader(file)) {
             Class<?> mainClass = classLoader.loadClass(manifest.getMain());
             if (!PartyGame.class.isAssignableFrom(mainClass)) {
                 System.err.println("Main class of game '" + gameName + "' does not implement PartyGame");
-                return;
+                return Optional.empty();
             }
 
             PartyGame game = (PartyGame) mainClass.getDeclaredConstructor(UserRegistry.class).newInstance(this.game.getUserRegistry());
             game.onLoad();
-            loadedGames.put(gameName, game);
             System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
+            return Optional.of(game);
         } catch (Exception e) {
             System.err.println("Could not load game from file '" + file.getName() + "':");
             e.printStackTrace();
+            return Optional.empty();
         }
-    }
-
-    private void unloadGame(@NotNull String name) {
-        PartyGame game = loadedGames.get(name);
-        game.onUnload();
-        System.out.println("Unloaded game '" + name + "'");
-    }
-
-    public List<PartyGame> getGames() {
-        return new ArrayList<>(loadedGames.values());
     }
 
     private @NotNull List<File> findJars() {

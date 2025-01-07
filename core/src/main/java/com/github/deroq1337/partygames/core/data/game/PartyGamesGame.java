@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.api.language.LanguageManager;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.core.PartyGames;
-import com.github.deroq1337.partygames.core.data.game.loader.PartyGameLoader;
+import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import org.jetbrains.annotations.NotNull;
 
 public interface PartyGamesGame<U extends User> {
@@ -13,7 +13,7 @@ public interface PartyGamesGame<U extends User> {
 
     @NotNull UserRegistry<U> getUserRegistry();
 
-    @NotNull PartyGameLoader getGameLoader();
+    @NotNull PartyGameProvider getGameLoader();
 
     @NotNull LanguageManager getLanguageManager();
 }
