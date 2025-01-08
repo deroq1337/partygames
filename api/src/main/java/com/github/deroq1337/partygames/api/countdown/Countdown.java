@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.api.countdown;
 
-import com.github.deroq1337.partygames.api.state.BaseState;
+import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public abstract class Countdown {
 
-    private final @NotNull BaseState gameState;
+    private final @NotNull GameState gameState;
     private final int startTick;
     private final @NotNull List<Integer> specialTicks;
 
@@ -21,7 +21,7 @@ public abstract class Countdown {
     private boolean started;
     private boolean running;
 
-    public Countdown(@NotNull BaseState gameState, int startTick, int... specialTicks) {
+    public Countdown(@NotNull GameState gameState, int startTick, int... specialTicks) {
         this.gameState = gameState;
         this.startTick = startTick;
         this.specialTicks = Arrays.stream(specialTicks).boxed().toList();
@@ -62,7 +62,7 @@ public abstract class Countdown {
 
         gameState.leave();
         if (gameState instanceof PartyGamesState) {
-            ((PartyGamesState) gameState).getNextState().ifPresent(BaseState::enter);
+            ((PartyGamesState) gameState).getNextState().ifPresent(GameState::enter);
         }
     }
 

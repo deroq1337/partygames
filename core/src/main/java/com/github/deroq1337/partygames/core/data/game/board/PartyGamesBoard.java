@@ -69,6 +69,12 @@ public class PartyGamesBoard extends YamlConfig {
                 .orElse(false);
     }
 
+    public int getNumberOfFields() {
+        return Optional.ofNullable(fields)
+                .map(Map::size)
+                .orElse(0);
+    }
+
     private <T> boolean removeAndUpdateMap(@Nullable Map<Integer, T> map, int id) {
         return Optional.ofNullable(map).map(idMap -> {
             boolean removed = idMap.remove(id) != null;

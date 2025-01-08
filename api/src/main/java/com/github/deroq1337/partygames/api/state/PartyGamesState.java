@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class PartyGamesState extends BaseState {
+public interface PartyGamesState extends GameState {
 
-    public abstract void onPlayerJoin(@NotNull UUID player);
+    void onPlayerJoin(@NotNull UUID player);
 
-    public abstract void onPlayerQuit(@NotNull UUID player);
+    void onPlayerQuit(@NotNull UUID player);
 
-    public abstract Optional<PartyGamesState> getNextState();
+    Optional<PartyGamesState> getNextState();
 }

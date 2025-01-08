@@ -1,7 +1,7 @@
 package com.github.deroq1337.partygames.core.data.game.countdowns;
 
 import com.github.deroq1337.partygames.api.countdown.Countdown;
-import com.github.deroq1337.partygames.api.state.BaseState;
+import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.tasks.CountdownTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
@@ -17,7 +17,7 @@ public class PartyGamesLobbyCountdown extends Countdown {
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private Optional<BukkitTask> task = Optional.empty();
 
-    public PartyGamesLobbyCountdown(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull BaseState gameState) {
+    public PartyGamesLobbyCountdown(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull GameState gameState) {
         super(gameState, 60, 60, 30, 10, 5, 4, 3, 2, 1);
         this.game = game;
     }

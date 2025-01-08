@@ -1,21 +1,26 @@
 package com.github.deroq1337.partygames.core.data.game;
 
 import com.github.deroq1337.partygames.api.language.LanguageManager;
+import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.core.PartyGames;
 import com.github.deroq1337.partygames.core.data.game.board.DefaultPartyGamesBoardManager;
+import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
+import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUserRegistry;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 @Getter
+@Setter
 public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     private final @NotNull PartyGames partyGames;
@@ -24,12 +29,18 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
     private final @NotNull LanguageManager languageManager;
     private final @NotNull PartyGamesBoardManager boardManager;
 
+    private @NotNull PartyGamesState currentState;
+    private @NotNull PartyGamesBoard board;
+
     public DefaultPartyGamesGame() {
         this.partyGames = new PartyGames();
         this.userRegistry = new PartyGamesUserRegistry(this);
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
         this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
+
+        this.currentState = new PartyGamesLobbyState(this);
+        this.board = boardManager.getRandomBoard().join().orElseThrow(() -> new RuntimeException("No maps found or map could not be loaded"));
 
         new PartyGamesBoardCommand(this);
     }
