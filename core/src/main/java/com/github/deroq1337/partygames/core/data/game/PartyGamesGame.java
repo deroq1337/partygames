@@ -7,6 +7,7 @@ import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.core.PartyGames;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
+import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,13 +15,15 @@ public interface PartyGamesGame<U extends User> {
 
     @NotNull PartyGames getPartyGames();
 
-    @NotNull UserRegistry<U> getUserRegistry();
+    @NotNull DiceConfig getDiceConfig();
 
     @NotNull PartyGameProvider getGameLoader();
 
     @NotNull LanguageManager getLanguageManager();
 
     @NotNull PartyGamesBoardManager getBoardManager();
+
+    @NotNull UserRegistry<U> getUserRegistry();
 
     @NotNull PartyGamesState getCurrentState();
 

@@ -8,6 +8,7 @@ import com.github.deroq1337.partygames.core.data.game.board.DefaultPartyGamesBoa
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
+import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
@@ -24,20 +25,22 @@ import java.io.File;
 public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     private final @NotNull PartyGames partyGames;
-    private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
+    private final @NotNull DiceConfig diceConfig;
     private final @NotNull PartyGameProvider gameLoader;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull PartyGamesBoardManager boardManager;
+    private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
 
     private @NotNull PartyGamesState currentState;
     private @NotNull PartyGamesBoard board;
 
     public DefaultPartyGamesGame() {
         this.partyGames = new PartyGames();
-        this.userRegistry = new PartyGamesUserRegistry(this);
+        this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml"));
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
         this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
+        this.userRegistry = new PartyGamesUserRegistry(this);
 
         this.currentState = new PartyGamesLobbyState(this);
         this.board = boardManager.getRandomBoard().join().orElseThrow(() -> new RuntimeException("No maps found or map could not be loaded"));
