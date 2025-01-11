@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
-import net.cubespace.Yamler.Config.Path;
 import net.cubespace.Yamler.Config.YamlConfig;
 import org.jetbrains.annotations.NotNull;
 
