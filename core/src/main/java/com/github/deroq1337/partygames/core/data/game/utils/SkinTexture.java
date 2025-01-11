@@ -34,7 +34,7 @@ public class SkinTexture {
         });
     }
 
-    private static Optional<URL> createUrl(String s) {
+    private static Optional<URL> createUrl(@NotNull String s) {
         try {
             return Optional.of(URI.create(s).toURL());
         } catch (MalformedURLException e) {
