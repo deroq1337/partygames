@@ -7,6 +7,9 @@ import com.github.deroq1337.partygames.core.PartyGames;
 import com.github.deroq1337.partygames.core.data.game.board.DefaultPartyGamesBoardManager;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
+import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesForceMapCommand;
+import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesPauseCommand;
+import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesStartCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
@@ -36,6 +39,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     private @NotNull PartyGamesState currentState;
     private Optional<PartyGamesBoard> board = Optional.empty();
+    private boolean forceMapped;
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
         this.partyGames = partyGames;
@@ -51,11 +55,15 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         new PlayerJoinListener(this);
         new PlayerQuitListener(this);
 
+        new PartyGamesForceMapCommand(this);
+        new PartyGamesStartCommand(this);
+        new PartyGamesPauseCommand(this);
         new PartyGamesBoardCommand(this);
     }
 
     @Override
-    public void setBoard(@NotNull PartyGamesBoard board) {
+    public void forceMap(@NotNull PartyGamesBoard board) {
         this.board = Optional.of(board);
+        this.forceMapped = true;
     }
 }

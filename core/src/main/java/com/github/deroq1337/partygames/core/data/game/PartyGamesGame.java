@@ -33,5 +33,7 @@ public interface PartyGamesGame<U extends User> {
 
     Optional<PartyGamesBoard> getBoard();
 
-    void setBoard(@NotNull PartyGamesBoard board);
+    boolean isForceMapped();
+
+    void forceMap(@NotNull PartyGamesBoard board);
 }

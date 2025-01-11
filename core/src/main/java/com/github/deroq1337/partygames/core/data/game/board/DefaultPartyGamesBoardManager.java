@@ -1,6 +1,5 @@
 package com.github.deroq1337.partygames.core.data.game.board;
 
-import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +29,7 @@ public class DefaultPartyGamesBoardManager implements PartyGamesBoardManager {
                 return true;
             } catch (InvalidConfigurationException e) {
                 System.err.println("Could not save board: " + e.getMessage());
+                e.printStackTrace();
                 return false;
             }
         });

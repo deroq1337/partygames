@@ -8,7 +8,6 @@ import com.github.deroq1337.partygames.core.data.game.board.serialization.MapDir
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.cubespace.Yamler.Config.InvalidConverterException;
 import net.cubespace.Yamler.Config.YamlConfig;
 import org.bukkit.Location;
@@ -33,9 +32,7 @@ public class PartyGamesBoard extends YamlConfig {
             addConverter(MapLocationConverter.class);
             addConverter(MapDirectedLocationConverter.class);
             addConverter(EnumConverter.class);
-
-            init();
-        } catch (InvalidConverterException | InvalidConfigurationException e) {
+        } catch (InvalidConverterException e) {
             throw new RuntimeException(e);
         }
     }

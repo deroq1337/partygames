@@ -20,13 +20,13 @@ public class PartyGamesBoardCreateSubCommand extends PartyGamesBoardSubCommand {
             return;
         }
 
-        String mapName = args[0];
-        if (boardManager.getBoardByName(mapName).join().isPresent()) {
+        String boardName = args[0];
+        if (boardManager.getBoardByName(boardName).join().isPresent()) {
             user.sendMessage("command_board_already_exists");
             return;
         }
 
-        if (!boardManager.saveBoard(new PartyGamesBoard(mapName)).join()) {
+        if (!boardManager.saveBoard(new PartyGamesBoard(boardName)).join()) {
             user.sendMessage("command_board_not_created");
             return;
         }
