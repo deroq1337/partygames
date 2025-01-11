@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class PartyGamesLobbyScoreboard extends PartyGamesScoreboard {
 
-    public PartyGamesLobbyScoreboard(@NotNull PartyGamesGame game) {
+    public PartyGamesLobbyScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
         super(game, PartyGamesLobbyState.class);
     }
 
@@ -23,11 +23,15 @@ public class PartyGamesLobbyScoreboard extends PartyGamesScoreboard {
         ((PartyGamesUser) user).getBukkitPlayer().ifPresent(player -> {
             Scoreboard scoreboard = player.getScoreboard();
 
-            String mapPrefix = user.getMessage("scoreboard_lobby_board_value", game.getBoard().getName());
-            updatePrefix(scoreboard, "map", mapPrefix);
+            String mapPrefix = game.getBoard()
+                    .map(board -> user.getMessage("scoreboard_lobby_board_value", board.getName()))
+                    .orElseGet(() -> user.getMessage("scoreboard_lobby_board_value", "§cNo board"));
+            updatePrefix(scoreboard, "board", mapPrefix);
 
-            String teamSizePrefix = user.getMessage("scoreboard_lobby_number_of_fields_value", game.getBoard().getNumberOfFields());
-            updatePrefix(scoreboard, "teamSize", teamSizePrefix);
+            String numberOfFieldsPrefix = game.getBoard()
+                    .map(board -> user.getMessage("scoreboard_lobby_number_of_fields_value", board.getNumberOfFields()))
+                    .orElseGet(() -> user.getMessage("scoreboard_lobby_number_of_fields_value", "§cNo board"));
+            updatePrefix(scoreboard, "numberOfFields", numberOfFieldsPrefix);
         });
     }
 

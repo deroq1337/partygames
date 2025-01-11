@@ -16,4 +16,6 @@ public interface User {
     void setLocale(@NotNull Locale locale);
 
     @NotNull String getMessage(@NotNull String key, Object... params);
+
+    boolean isSpectator();
 }

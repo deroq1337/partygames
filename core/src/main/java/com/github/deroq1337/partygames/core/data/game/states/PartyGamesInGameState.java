@@ -33,12 +33,12 @@ public class PartyGamesInGameState implements PartyGamesState {
     }
 
     @Override
-    public void onPlayerJoin(@NotNull UUID player) {
+    public void onPlayerJoin(@NotNull UUID uuid) {
 
     }
 
     @Override
-    public void onPlayerQuit(@NotNull UUID player) {
+    public void onPlayerQuit(@NotNull UUID uuid) {
 
     }
 

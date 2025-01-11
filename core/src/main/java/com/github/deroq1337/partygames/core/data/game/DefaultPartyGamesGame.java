@@ -10,6 +10,8 @@ import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManag
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
+import com.github.deroq1337.partygames.core.data.game.listeners.PlayerJoinListener;
+import com.github.deroq1337.partygames.core.data.game.listeners.PlayerQuitListener;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
@@ -19,6 +21,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -32,10 +35,10 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
     private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
 
     private @NotNull PartyGamesState currentState;
-    private @NotNull PartyGamesBoard board;
+    private Optional<PartyGamesBoard> board = Optional.empty();
 
-    public DefaultPartyGamesGame() {
-        this.partyGames = new PartyGames();
+    public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
+        this.partyGames = partyGames;
         this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml"));
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
@@ -43,8 +46,16 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         this.userRegistry = new PartyGamesUserRegistry(this);
 
         this.currentState = new PartyGamesLobbyState(this);
-        this.board = boardManager.getRandomBoard().join().orElseThrow(() -> new RuntimeException("No maps found or map could not be loaded"));
+        this.board = boardManager.getRandomBoard().join();
+
+        new PlayerJoinListener(this);
+        new PlayerQuitListener(this);
 
         new PartyGamesBoardCommand(this);
+    }
+
+    @Override
+    public void setBoard(@NotNull PartyGamesBoard board) {
+        this.board = Optional.of(board);
     }
 }

@@ -9,6 +9,7 @@ import com.github.deroq1337.partygames.core.data.game.countdowns.PartyGamesLobby
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesLobbyScoreboard;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
+import org.bukkit.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -38,8 +39,20 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
     }
 
     @Override
-    public void onPlayerJoin(@NotNull UUID player) {
+    public void onPlayerJoin(@NotNull UUID uuid) {
+        PartyGamesUser user = game.getUserRegistry().addUser(uuid, true);
+        user.getBukkitPlayer().ifPresent(player -> {
+            player.getInventory().clear();
+            player.setHealth(20);
+            player.setFoodLevel(20);
+            player.setLevel(0);
+            player.setExp(0);
+            player.setFlying(false);
+            player.setOp(false);
+            player.setGameMode(GameMode.SURVIVAL);
 
+            scoreboard.setScoreboard(user);
+        });
     }
 
     @Override
@@ -50,7 +63,8 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
     @Override
     public boolean canStart() {
         return game.getCurrentState() instanceof PartyGamesLobbyState
-                && game.getUserRegistry().getUsers().size() == 1;
+                && game.getUserRegistry().getUsers().size() == 1
+                && game.getBoard().isPresent();
     }
 
     @Override

@@ -11,6 +11,8 @@ import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public interface PartyGamesGame<U extends User> {
 
     @NotNull PartyGames getPartyGames();
@@ -29,7 +31,7 @@ public interface PartyGamesGame<U extends User> {
 
     void setCurrentState(@NotNull PartyGamesState state);
 
-    @NotNull PartyGamesBoard getBoard();
+    Optional<PartyGamesBoard> getBoard();
 
     void setBoard(@NotNull PartyGamesBoard board);
 }

@@ -17,17 +17,19 @@ public class PartyGamesUserRegistry implements UserRegistry<PartyGamesUser> {
     private final @NotNull PartyGamesGame game;
     private final @NotNull Map<UUID, PartyGamesUser> userMap = new ConcurrentHashMap<>();
 
-    public void addUser(@NotNull UUID uuid){
-        userMap.put(uuid, new PartyGamesUser(game, uuid));
+    public @NotNull PartyGamesUser addUser(@NotNull UUID uuid, boolean spectator) {
+        PartyGamesUser user = new PartyGamesUser(game, uuid, spectator);
+        userMap.put(uuid, user);
+        return user;
     }
 
     @Override
-    public void removeUser(@NotNull UUID uuid){
+    public void removeUser(@NotNull UUID uuid) {
         userMap.remove(uuid);
     }
 
     @Override
-    public Optional<PartyGamesUser> getUser(@NotNull UUID uuid){
+    public Optional<PartyGamesUser> getUser(@NotNull UUID uuid) {
         return Optional.ofNullable(userMap.get(uuid));
     }
 

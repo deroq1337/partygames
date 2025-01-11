@@ -22,6 +22,7 @@ public class PartyGamesUser implements User {
 
     private final @NotNull PartyGamesGame game;
     private final @NotNull UUID uuid;
+    private final boolean spectator;
     private @NotNull Locale locale = Locale.forLanguageTag("de-DE");
 
     @Override

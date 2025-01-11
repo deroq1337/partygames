@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface PartyGamesState extends GameState {
 
-    void onPlayerJoin(@NotNull UUID player);
+    void onPlayerJoin(@NotNull UUID uuid);
 
-    void onPlayerQuit(@NotNull UUID player);
+    void onPlayerQuit(@NotNull UUID uuid);
 
     Optional<PartyGamesState> getNextState();
 }

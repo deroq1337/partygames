@@ -56,6 +56,11 @@ public class DefaultPartyGamesBoardManager implements PartyGamesBoardManager {
     public @NotNull CompletableFuture<Optional<PartyGamesBoard>> getRandomBoard() {
         return CompletableFuture.supplyAsync(() -> {
             return Optional.ofNullable(boardsDirectory.listFiles()).map(files -> {
+                if (files.length == 0) {
+                    System.err.println("No game boards found");
+                    return null;
+                }
+
                 List<File> fileList = new ArrayList<>(Arrays.stream(files).toList());
                 File randomFile = fileList.get(ThreadLocalRandom.current().nextInt(fileList.size()));
                 return load(new PartyGamesBoard(randomFile));

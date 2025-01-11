@@ -10,7 +10,7 @@ public class PartyGames extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.game = new DefaultPartyGamesGame();
+        this.game = new DefaultPartyGamesGame(this);
     }
 
     @Override

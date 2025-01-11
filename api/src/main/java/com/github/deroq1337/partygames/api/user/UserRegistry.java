@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserRegistry<U extends User> {
 
-    void addUser(@NotNull UUID uuid);
+    @NotNull U addUser(@NotNull UUID uuid, boolean spectator);
 
     void removeUser(@NotNull UUID uuid);
 

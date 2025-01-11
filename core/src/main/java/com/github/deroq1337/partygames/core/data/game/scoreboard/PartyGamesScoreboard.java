@@ -19,11 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class PartyGamesScoreboard implements GameScoreboard {
 
-    protected final @NotNull PartyGamesGame game;
+    protected final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull Class<? extends PartyGamesState> gameState;
     protected final @NotNull List<PartyGamesScoreboardScore> scoreboardScores;
 
-    public PartyGamesScoreboard(@NotNull PartyGamesGame game, @NotNull Class<? extends PartyGamesState> gameState) {
+    public PartyGamesScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull Class<? extends PartyGamesState> gameState) {
         this.game = game;
         this.gameState = gameState;
         this.scoreboardScores = getScoreboardScores();
