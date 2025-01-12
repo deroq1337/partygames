@@ -19,6 +19,7 @@ import java.util.*;
 public class PartyGamesBoard extends YamlConfig {
 
     private @NotNull String name;
+    private @Nullable MapDirectedLocation startLocation;
     private @Nullable Map<Integer, PartyGamesBoardField> fields;
 
     public PartyGamesBoard(@NotNull File file) {
@@ -51,6 +52,14 @@ public class PartyGamesBoard extends YamlConfig {
                 .map(Map::size)
                 .orElse(0);
     }
+
+    public Optional<PartyGamesBoardField> getField(int id) {
+        return Optional.ofNullable(fields).map(fields -> fields.get(id));
+    }
+
+   /* public void setStartLocation(@NotNull Location location) {
+        this.startLocation = new MapDirectedLocation(location);
+    } */
 
     private <T> boolean removeAndUpdateMap(@Nullable Map<Integer, T> map, int id) {
         return Optional.ofNullable(map).map(idMap -> {

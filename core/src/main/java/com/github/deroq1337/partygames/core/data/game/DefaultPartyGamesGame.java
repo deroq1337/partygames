@@ -13,6 +13,7 @@ import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesStartCo
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
+import com.github.deroq1337.partygames.core.data.game.listeners.PlayerInteractListener;
 import com.github.deroq1337.partygames.core.data.game.listeners.PlayerJoinListener;
 import com.github.deroq1337.partygames.core.data.game.listeners.PlayerQuitListener;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
@@ -24,7 +25,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 @Getter
@@ -44,8 +44,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
         this.partyGames = partyGames;
-        //this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load();
-        this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml"));
+        this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load(DiceConfig.class);
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
         this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
@@ -56,6 +55,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
         new PlayerJoinListener(this);
         new PlayerQuitListener(this);
+        new PlayerInteractListener(this);
 
         new PartyGamesForceMapCommand(this);
         new PartyGamesStartCommand(this);

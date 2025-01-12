@@ -1,20 +1,22 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.config.YamlConfig;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public class DiceConfig extends YamlConfig {
 
+    private long diceRollTime = 8; // in seconds
+    private @NotNull String diceTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU5ODk5ZmI5ZTNhOTY0NDZlZGJjZjU5ZDJiNDM5OTNlOThjMWU5ZWM3ZDg3ZDE5M2RjMzBlNTVhNzhlOTQxZSJ9fX0=";
     private @NotNull Map<Integer, String> diceTextures = new HashMap<>();
 
     public DiceConfig(@NotNull File file) {

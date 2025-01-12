@@ -8,11 +8,13 @@ import java.util.UUID;
 
 public interface UserRegistry<U extends User> {
 
-    @NotNull U addUser(@NotNull UUID uuid, boolean spectator);
+    @NotNull U addUser(@NotNull UUID uuid, boolean alive);
 
     void removeUser(@NotNull UUID uuid);
 
     Optional<U> getUser(@NotNull UUID uuid);
+
+    @NotNull Collection<U> getAliveUsers();
 
     @NotNull Collection<U> getUsers();
 }

@@ -3,6 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.commands.board;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardAddFieldSubCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardCreateSubCommand;
+import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardSetStartSubCommand;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,7 +26,8 @@ public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
         this.game = game;
         this.subCommandMap = Stream.of(
                 new PartyGamesBoardCreateSubCommand(game),
-                new PartyGamesBoardAddFieldSubCommand(game)
+                new PartyGamesBoardAddFieldSubCommand(game),
+                new PartyGamesBoardSetStartSubCommand(game)
         ).collect(Collectors.toMap(subCommand -> subCommand.getName().toLowerCase(), subCommand -> subCommand));
 
         Optional.ofNullable(game.getPartyGames().getCommand("board")).ifPresent(pluginCommand -> pluginCommand.setExecutor(this));

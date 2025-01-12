@@ -6,7 +6,6 @@ import com.github.deroq1337.partygames.api.state.CountdownableState;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.countdowns.PartyGamesLobbyCountdown;
-import com.github.deroq1337.partygames.core.data.game.dice.DiceTest;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesLobbyScoreboard;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
@@ -53,9 +52,6 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
             player.setGameMode(GameMode.SURVIVAL);
 
             scoreboard.setScoreboard(user);
-
-           /* DiceTest dice = new DiceTest(game, player);
-            dice.test(); */
         });
     }
 
@@ -73,6 +69,6 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
 
     @Override
     public Optional<PartyGamesState> getNextState() {
-        return Optional.empty();
+        return Optional.of(new PartyGamesInGameState(game));
     }
 }
