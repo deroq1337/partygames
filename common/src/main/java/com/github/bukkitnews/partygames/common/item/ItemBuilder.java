@@ -1,4 +1,4 @@
-package com.github.bukkitnews.partygames.common;
+package com.github.bukkitnews.partygames.common.item;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

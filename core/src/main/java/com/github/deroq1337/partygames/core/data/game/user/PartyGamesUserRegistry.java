@@ -12,9 +12,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PartyGamesUserRegistry implements UserRegistry<PartyGamesUser> {
 
-    private final @NotNull PartyGamesGame game;
+    private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull Map<UUID, PartyGamesUser> userMap = new ConcurrentHashMap<>();
 
+    @Override
     public @NotNull PartyGamesUser addUser(@NotNull UUID uuid, boolean alive) {
         PartyGamesUser user = new PartyGamesUser(game, uuid, alive);
         userMap.put(uuid, user);

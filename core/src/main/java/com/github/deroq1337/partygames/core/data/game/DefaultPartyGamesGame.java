@@ -14,10 +14,7 @@ import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesB
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
-import com.github.deroq1337.partygames.core.data.game.listeners.EntityDamageListener;
-import com.github.deroq1337.partygames.core.data.game.listeners.PlayerInteractListener;
-import com.github.deroq1337.partygames.core.data.game.listeners.PlayerJoinListener;
-import com.github.deroq1337.partygames.core.data.game.listeners.PlayerQuitListener;
+import com.github.deroq1337.partygames.core.data.game.listeners.*;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
@@ -61,6 +58,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         new PlayerQuitListener(this);
         new PlayerInteractListener(this);
         new EntityDamageListener(this);
+        new PartyGameEndListener(this);
 
         new PartyGamesForceMapCommand(this);
         new PartyGamesStartCommand(this);

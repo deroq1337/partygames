@@ -7,6 +7,7 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesInGameScoreboard;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class PartyGamesInGameState implements PartyGamesState {
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull GameScoreboard scoreboard;
 
+    @Setter
     private Optional<PartyGame> currentGame = Optional.empty();
 
     public PartyGamesInGameState(@NotNull PartyGamesGame<PartyGamesUser> game) {

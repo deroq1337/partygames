@@ -27,9 +27,18 @@ public class PartyGamesUser implements User {
     private final @NotNull UUID uuid;
     private final boolean alive;
 
+    private @NotNull Locale locale = Locale.forLanguageTag("de-DE");
+    private @NotNull Location lastLocation;
     private int currentField;
     private Optional<Dice> dice;
-    private @NotNull Locale locale = Locale.forLanguageTag("de-DE");
+
+    public PartyGamesUser(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull UUID uuid, boolean alive) {
+        this.game = game;
+        this.uuid = uuid;
+        this.alive = alive;
+
+        getBukkitPlayer().ifPresent(player -> setLastLocation(player.getLocation()));
+    }
 
     @Override
     public void sendMessage(@NotNull String key, Object... params) {
