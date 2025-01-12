@@ -3,7 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.user;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.dice.Dice;
-import com.github.deroq1337.partygames.core.data.game.task.FieldJumpTask;
+import com.github.deroq1337.partygames.core.data.game.tasks.FieldJumpTask;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

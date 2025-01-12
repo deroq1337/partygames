@@ -1,6 +1,5 @@
-package com.github.deroq1337.partygames.core.data.game.task;
+package com.github.deroq1337.partygames.core.data.game.tasks;
 
-import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameManifest;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesInGameState;
@@ -10,7 +9,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -6,7 +6,7 @@ import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameManifest;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesInGameScoreboard;
-import com.github.deroq1337.partygames.core.data.game.task.PartyGameChooseTask;
+import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameChooseTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

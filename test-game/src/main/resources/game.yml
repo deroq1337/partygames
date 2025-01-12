@@ -1,4 +1,5 @@
 name: TestGame
+description: Das ist nur ein Test Spiel. Ihr solltet also nicht zu viel erwarten!
+main: com.github.deroq1337.partygames.testgame.TestGame
 version: 1.0
 author: deroq
-main: com.github.deroq1337.partygames.testgame.TestGame
