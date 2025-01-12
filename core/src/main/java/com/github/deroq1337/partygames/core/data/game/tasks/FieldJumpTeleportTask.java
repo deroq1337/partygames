@@ -21,7 +21,8 @@ public class FieldJumpTeleportTask extends BukkitRunnable implements Task {
     public void run() {
         double y = player.getLocation().getY();
         if (y > mainConfig.getFieldJumpTeleportHeight()) {
-            player.teleport(fieldLocation.clone().add(0, Math.abs(y - fieldLocation.getY()), 0));
+            int diffY = Math.abs(y - fieldLocation.getY());
+            player.teleport(fieldLocation.clone().add(0, diffY, 0));
             cancel();
         }
     }
