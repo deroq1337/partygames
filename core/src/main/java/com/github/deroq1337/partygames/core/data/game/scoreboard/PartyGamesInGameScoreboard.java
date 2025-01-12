@@ -4,6 +4,7 @@ import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.models.PartyGamesScoreboardScore;
+import com.github.deroq1337.partygames.core.data.game.states.PartyGamesInGameState;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.scoreboard.Scoreboard;
@@ -15,7 +16,7 @@ import java.util.Optional;
 public class PartyGamesInGameScoreboard extends PartyGamesScoreboard {
 
     public PartyGamesInGameScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
-        super(game, PartyGamesLobbyState.class);
+        super(game, PartyGamesInGameState.class);
     }
 
     @Override
@@ -26,10 +27,10 @@ public class PartyGamesInGameScoreboard extends PartyGamesScoreboard {
             String playersCountPrefix = user.getMessage("scoreboard_in_game_players_count_value", game.getUserRegistry().getAliveUsers().size());
             updatePrefix(scoreboard, "playersCount", playersCountPrefix);
 
-            String rankingPrefix = user.getMessage("scoreboard_in_game_ranking_value", user.getFieldRanking());
+            String rankingPrefix = user.getMessage("scoreboard_in_game_ranking_value", ((PartyGamesUser) user).getFieldRanking());
             updatePrefix(scoreboard, "ranking", rankingPrefix);
 
-            String currentFieldPrefix = user.getMessage("scoreboard_in_game_current_field_value", user.getCurrentField());
+            String currentFieldPrefix = user.getMessage("scoreboard_in_game_current_field_value", ((PartyGamesUser) user).getCurrentField());
             updatePrefix(scoreboard, "currentField", currentFieldPrefix);
         });
     }
