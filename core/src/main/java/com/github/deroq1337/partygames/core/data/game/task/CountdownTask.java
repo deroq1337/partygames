@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game.tasks;
+package com.github.deroq1337.partygames.core.data.game.task;
 
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import lombok.RequiredArgsConstructor;

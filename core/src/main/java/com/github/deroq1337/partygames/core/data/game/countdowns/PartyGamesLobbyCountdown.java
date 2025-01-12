@@ -3,7 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.countdowns;
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.tasks.CountdownTask;
+import com.github.deroq1337.partygames.core.data.game.task.CountdownTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;

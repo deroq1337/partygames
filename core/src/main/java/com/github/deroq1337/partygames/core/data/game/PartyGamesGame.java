@@ -22,7 +22,7 @@ public interface PartyGamesGame<U extends User> {
 
     @NotNull DiceConfig getDiceConfig();
 
-    @NotNull PartyGameProvider getGameLoader();
+    @NotNull PartyGameProvider getGameProvider();
 
     @NotNull LanguageManager getLanguageManager();
 

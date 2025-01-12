@@ -68,6 +68,10 @@ public class PartyGameProvider {
         }
     }
 
+    public @NotNull Set<PartyGameManifest> getPartyGameManifests() {
+        return foundGames.keySet();
+    }
+
     private @NotNull List<File> findJars() {
         return Optional.ofNullable(gamesDirectory.listFiles())
                 .map(files -> Arrays.stream(files)

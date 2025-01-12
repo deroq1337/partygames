@@ -1,6 +1,8 @@
-package com.github.deroq1337.partygames.core.data.game.tasks;
+package com.github.deroq1337.partygames.core.data.game.task;
 
+import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
+import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -8,8 +10,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-public class FieldJumpTeleportTask extends BukkitRunnable {
+public class FieldJumpTeleportTask extends BukkitRunnable implements Task {
 
+    private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull Player player;
     private final @NotNull Location fieldLocation;
     private final @NotNull MainConfig mainConfig;
@@ -21,5 +24,10 @@ public class FieldJumpTeleportTask extends BukkitRunnable {
             player.teleport(fieldLocation.clone().add(0, Math.abs(y - fieldLocation.getY()), 0));
             cancel();
         }
+    }
+
+    @Override
+    public void start() {
+        runTaskTimer(game.getPartyGames(), 0L, 1L);
     }
 }
