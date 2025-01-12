@@ -17,11 +17,5 @@ public interface User {
 
     @NotNull String getMessage(@NotNull String key, Object... params);
 
-    int getCurrentField();
-
-    void setField(int field);
-
-    int getFieldRanking();
-
     boolean isAlive();
 }

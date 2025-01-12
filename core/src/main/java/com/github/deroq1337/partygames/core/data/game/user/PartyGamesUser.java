@@ -3,11 +3,13 @@ package com.github.deroq1337.partygames.core.data.game.user;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.dice.Dice;
+import com.github.deroq1337.partygames.core.data.game.tasks.FieldJumpTask;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,16 +43,21 @@ public class PartyGamesUser implements User {
         return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(game.getLanguageManager().getMessage(locale, key), params));
     }
 
-    @Override
-    public void setField(int field) {
-        this.currentField = field;
+    public void goToField(int numberOfEyes) {
+        this.currentField += numberOfEyes;
+
+        getBukkitPlayer().ifPresent(player -> {
+            game.getBoard().flatMap(board -> board.getField(currentField)).ifPresent(field -> {
+                Location fieldLocation = field.getLocation().toBukkitLocation();
+                new FieldJumpTask(game, player, fieldLocation).runTaskLater(game.getPartyGames(), 2 * 20L);
+            });
+        });
     }
 
-    @Override
     public int getFieldRanking() {
         return (int) game.getUserRegistry().getAliveUsers().stream()
                 .filter(user -> user.getCurrentField() > currentField)
-                .count();
+                .count() + 1;
     }
 
     public void initDice() {

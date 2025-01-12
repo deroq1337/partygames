@@ -11,8 +11,10 @@ import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesForceMa
 import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesPauseCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesStartCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
+import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
+import com.github.deroq1337.partygames.core.data.game.listeners.EntityDamageListener;
 import com.github.deroq1337.partygames.core.data.game.listeners.PlayerInteractListener;
 import com.github.deroq1337.partygames.core.data.game.listeners.PlayerJoinListener;
 import com.github.deroq1337.partygames.core.data.game.listeners.PlayerQuitListener;
@@ -32,6 +34,7 @@ import java.util.Optional;
 public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     private final @NotNull PartyGames partyGames;
+    private final @NotNull MainConfig mainConfig;
     private final @NotNull DiceConfig diceConfig;
     private final @NotNull PartyGameProvider gameLoader;
     private final @NotNull LanguageManager languageManager;
@@ -44,6 +47,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
         this.partyGames = partyGames;
+        this.mainConfig = new MainConfig(new File("plugins/partygames/configs/config.yml")).load(MainConfig.class);
         this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load(DiceConfig.class);
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
@@ -56,6 +60,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         new PlayerJoinListener(this);
         new PlayerQuitListener(this);
         new PlayerInteractListener(this);
+        new EntityDamageListener(this);
 
         new PartyGamesForceMapCommand(this);
         new PartyGamesStartCommand(this);

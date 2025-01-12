@@ -54,10 +54,24 @@ public abstract class YamlConfig {
 
     public <T extends YamlConfig> @NotNull T load(Class<T> clazz) {
         Yaml yaml = new Yaml(new Constructor(clazz, loaderOptions), representer, dumperOptions);
-        try (FileReader reader = new FileReader(file)) {
-            T config = yaml.loadAs(reader, clazz);
-            config.file = file;
-            return config;
+
+        try {
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            if (!file.exists()) {
+                file.createNewFile();
+                save();
+            }
+
+            try (FileReader reader = new FileReader(file)) {
+                T config = yaml.loadAs(reader, clazz);
+                if (config != null) {
+                    config.file = file;
+                }
+                return config;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
