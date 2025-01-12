@@ -67,7 +67,11 @@ public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return new ArrayList<>(subCommandMap.keySet());
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (args.length == 1) {
+            return new ArrayList<>(subCommandMap.keySet());
+        }
+
+        return null;
     }
 }

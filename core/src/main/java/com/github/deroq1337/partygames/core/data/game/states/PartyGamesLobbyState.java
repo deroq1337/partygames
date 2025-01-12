@@ -54,8 +54,8 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
 
             scoreboard.setScoreboard(user);
 
-            DiceTest dice = new DiceTest(game, player);
-            dice.test();
+           /* DiceTest dice = new DiceTest(game, player);
+            dice.test(); */
         });
     }
 

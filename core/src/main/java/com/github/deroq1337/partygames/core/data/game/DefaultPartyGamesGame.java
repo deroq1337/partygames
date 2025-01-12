@@ -24,6 +24,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 @Getter
@@ -43,6 +44,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
         this.partyGames = partyGames;
+        //this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load();
         this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml"));
         this.gameLoader = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));

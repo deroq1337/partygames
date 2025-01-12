@@ -1,9 +1,9 @@
 package com.github.deroq1337.partygames.core.data.game.board;
 
-import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +27,8 @@ public class DefaultPartyGamesBoardManager implements PartyGamesBoardManager {
             try {
                 board.save();
                 return true;
-            } catch (InvalidConfigurationException e) {
+            } catch (IOException e) {
                 System.err.println("Could not save board: " + e.getMessage());
-                e.printStackTrace();
                 return false;
             }
         });
@@ -48,7 +47,7 @@ public class DefaultPartyGamesBoardManager implements PartyGamesBoardManager {
                 return Optional.empty();
             }
 
-            return Optional.of(load(board));
+            return Optional.of(board.load(PartyGamesBoard.class));
         });
     }
 
@@ -63,18 +62,9 @@ public class DefaultPartyGamesBoardManager implements PartyGamesBoardManager {
 
                 List<File> fileList = new ArrayList<>(Arrays.stream(files).toList());
                 File randomFile = fileList.get(ThreadLocalRandom.current().nextInt(fileList.size()));
-                return load(new PartyGamesBoard(randomFile));
+                return new PartyGamesBoard(randomFile).load(PartyGamesBoard.class);
             });
         });
     }
 
-
-    private @NotNull PartyGamesBoard load(@NotNull PartyGamesBoard board) {
-        try {
-            board.load();
-            return board;
-        } catch (InvalidConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

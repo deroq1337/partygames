@@ -1,23 +1,19 @@
 package com.github.deroq1337.partygames.core.data.game.board;
 
-import com.github.deroq1337.partygames.core.data.game.board.converters.EnumConverter;
-import com.github.deroq1337.partygames.core.data.game.board.converters.MapDirectedLocationConverter;
-import com.github.deroq1337.partygames.core.data.game.board.converters.MapLocationConverter;
 import com.github.deroq1337.partygames.core.data.game.board.models.PartyGamesBoardField;
 import com.github.deroq1337.partygames.core.data.game.board.serialization.MapDirectedLocation;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import net.cubespace.Yamler.Config.InvalidConverterException;
-import net.cubespace.Yamler.Config.YamlConfig;
+import com.github.deroq1337.partygames.core.data.game.config.YamlConfig;
+import lombok.*;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
+@NoArgsConstructor
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public class PartyGamesBoard extends YamlConfig {
@@ -26,28 +22,12 @@ public class PartyGamesBoard extends YamlConfig {
     private @Nullable Map<Integer, PartyGamesBoardField> fields;
 
     public PartyGamesBoard(@NotNull File file) {
-        this.CONFIG_FILE = file;
-
-        try {
-            addConverter(MapLocationConverter.class);
-            addConverter(MapDirectedLocationConverter.class);
-            addConverter(EnumConverter.class);
-        } catch (InvalidConverterException e) {
-            throw new RuntimeException(e);
-        }
+        super(file);
     }
 
     public PartyGamesBoard(@NotNull String name) {
         this(new File("plugins/partygames/boards/" + name + ".yml"));
         this.name = name;
-    }
-
-    public boolean delete() {
-        return CONFIG_FILE.delete();
-    }
-
-    public boolean exists() {
-        return CONFIG_FILE.exists();
     }
 
     public int addField(@NotNull Location location, boolean event) {
