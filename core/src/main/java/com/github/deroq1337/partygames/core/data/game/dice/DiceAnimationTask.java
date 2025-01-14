@@ -36,7 +36,6 @@ public class DiceAnimationTask extends BukkitRunnable {
 
         if (ticks >= dice.getConfig().getDiceRollTime() * 20L) {
             dice.roll();
-            cancel();
             return;
         }
 

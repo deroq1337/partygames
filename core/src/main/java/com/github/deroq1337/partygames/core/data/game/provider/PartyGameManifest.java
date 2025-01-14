@@ -23,7 +23,7 @@ public class PartyGameManifest {
         this.version = Optional.ofNullable(String.valueOf(map.get("version")));
         this.author = Optional.ofNullable(String.valueOf(map.get("author")));
         this.main = String.valueOf(map.get("main"));
-        this.displayItem = Optional.ofNullable(String.valueOf(map.get("displayItem")))
+        this.displayItem = Optional.ofNullable(map.get("displayItem"))
                 .map(Material::valueOf);
     }
 }

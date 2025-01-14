@@ -8,8 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 public class PartyGameEndListener implements Listener {
 
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
@@ -25,21 +23,6 @@ public class PartyGameEndListener implements Listener {
             return;
         }
 
-        inGameState.setCurrentGame(Optional.empty());
-        teleportUsers();
-    }
-
-    private void teleportUsers() {
-        game.getBoard().ifPresent(board -> {
-            game.getUserRegistry().getUsers().forEach(user -> {
-                user.getBukkitPlayer().ifPresent(player -> {
-                    player.teleport(user.getLastLocation());
-
-                    if (user.isAlive()) {
-                        user.initDice();
-                    }
-                });
-            });
-        });
+        inGameState.onGameEnd();
     }
 }

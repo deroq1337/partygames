@@ -9,6 +9,7 @@ import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesInGam
 import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameChooseTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
+import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -33,15 +34,16 @@ public class PartyGamesInGameState implements PartyGamesState {
     @Override
     public void enter() {
         game.setCurrentState(this);
+
         game.getBoard().ifPresent(board -> {
             game.getUserRegistry().getAliveUsers().forEach(user -> {
+                scoreboard.setScoreboard(user);
+
                 user.getBukkitPlayer().ifPresent(player ->
                         Optional.ofNullable(board.getStartLocation()).ifPresent(startLocation -> player.teleport(startLocation.toBukkitLocation())));
                 user.initDice();
 
-                scoreboard.setScoreboard(user);
-                new PartyGameChooseTask(game, this);
-
+                new PartyGameChooseTask(game, this).start();
             });
         });
     }
@@ -70,8 +72,24 @@ public class PartyGamesInGameState implements PartyGamesState {
         this.currentGame = Optional.of(partyGame);
     }
 
+    public void onGameEnd() {
+        this.currentGame = Optional.empty();
+        game.getBoard().ifPresent(board -> {
+            game.getUserRegistry().getUsers().forEach(user -> {
+                user.getBukkitPlayer().ifPresent(player -> {
+                    player.teleport(user.getLastLocation());
+
+                    if (user.isAlive()) {
+                        user.initDice();
+                    }
+                });
+            });
+        });
+    }
+
     private void announceGame(@NotNull PartyGameManifest manifest) {
         game.getUserRegistry().getUsers().forEach(user -> {
+            user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f));
             user.sendMessage("game_announcement_name", manifest.getName());
             user.sendMessage("game_announcement_explanation", manifest.getDescription());
         });

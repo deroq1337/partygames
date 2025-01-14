@@ -31,6 +31,7 @@ public class PartyGamesUser implements User {
     private @NotNull Location lastLocation;
     private int currentField;
     private Optional<Dice> dice;
+    private boolean landed;
 
     public PartyGamesUser(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull UUID uuid, boolean alive) {
         this.game = game;
@@ -53,12 +54,13 @@ public class PartyGamesUser implements User {
     }
 
     public void goToField(int numberOfEyes) {
+        this.landed = false;
         this.currentField += numberOfEyes;
 
         getBukkitPlayer().ifPresent(player -> {
             game.getBoard().flatMap(board -> board.getField(currentField)).ifPresent(field -> {
                 Location fieldLocation = field.getLocation().toBukkitLocation();
-                new FieldJumpTask(game, player, fieldLocation).start();
+                new FieldJumpTask(game, this, player, fieldLocation).start();
             });
         });
     }
@@ -71,6 +73,12 @@ public class PartyGamesUser implements User {
 
     public void initDice() {
         this.dice = Optional.of(new Dice(game, this));
+    }
+
+    public boolean hasDiceRolled() {
+        return dice
+                .map(Dice::isRolled)
+                .orElse(false);
     }
 
     public Optional<Player> getBukkitPlayer() {

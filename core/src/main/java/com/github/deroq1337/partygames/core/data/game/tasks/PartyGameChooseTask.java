@@ -33,10 +33,11 @@ public class PartyGameChooseTask extends BukkitRunnable implements Task {
             return;
         }
 
-        long notRolled = game.getUserRegistry().getAliveUsers().stream()
-                .filter(user -> user.getDice().map(dice -> !dice.isRolled()).orElse(true))
+        long notReady = game.getUserRegistry().getAliveUsers().stream()
+                .filter(user -> !user.hasDiceRolled() || !user.isLanded())
                 .count();
-        if (notRolled == 0) {
+
+        if (notReady == 0) {
             PartyGameManifest manifest = new ArrayList<>(playableGames).get(ThreadLocalRandom.current().nextInt(playableGames.size()));
             state.playGame(manifest);
             cancel();
@@ -45,6 +46,6 @@ public class PartyGameChooseTask extends BukkitRunnable implements Task {
 
     @Override
     public void start() {
-        runTaskTimer(game.getPartyGames(), 0L, 20L);
+        runTaskTimer(game.getPartyGames(), 0L, 5 * 20L);
     }
 }
