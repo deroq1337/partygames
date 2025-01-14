@@ -1,5 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game;
 
+import com.github.deroq1337.partygames.api.game.PartyGameMap;
 import com.github.deroq1337.partygames.api.language.LanguageManager;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
@@ -15,6 +16,8 @@ import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
 import com.github.deroq1337.partygames.core.data.game.listeners.*;
+import com.github.deroq1337.partygames.core.data.game.map.DefaultPartyGameMapManager;
+import com.github.deroq1337.partygames.core.data.game.map.PartyGameMapManager;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
@@ -24,6 +27,8 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Getter
@@ -36,6 +41,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
     private final @NotNull PartyGameProvider gameProvider;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull PartyGamesBoardManager boardManager;
+    private final @NotNull Map<Class<? extends PartyGameMap>, PartyGameMapManager> gameMapManagerMap = new HashMap<>();
     private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
 
     private @NotNull PartyGamesState currentState;
@@ -64,6 +70,11 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         new PartyGamesStartCommand(this);
         new PartyGamesPauseCommand(this);
         new PartyGamesBoardCommand(this);
+    }
+
+    @Override
+    public @NotNull PartyGameMapManager getGameMapManager(@NotNull Class<? extends PartyGameMap> mapClass, @NotNull File gameDirectory) {
+        return gameMapManagerMap.computeIfAbsent(mapClass, k -> new DefaultPartyGameMapManager(mapClass, gameDirectory));
     }
 
     @Override

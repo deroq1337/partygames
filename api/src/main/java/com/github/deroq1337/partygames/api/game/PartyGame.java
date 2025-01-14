@@ -7,15 +7,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 @RequiredArgsConstructor
 @Getter
-public abstract class PartyGame {
+public abstract class PartyGame<M extends PartyGameMap> {
 
+    private final @NotNull File directory;
     private final @NotNull UserRegistry<? extends User> userRegistry;
+    private final @NotNull M map;
 
     public abstract void onLoad();
 
     public abstract void onUnload();
 
     public abstract @NotNull PartyGameState getState();
+
 }

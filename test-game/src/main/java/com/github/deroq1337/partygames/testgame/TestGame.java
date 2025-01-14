@@ -4,12 +4,15 @@ import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.state.PartyGameState;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
+import com.github.deroq1337.partygames.testgame.map.TestMap;
 import org.jetbrains.annotations.NotNull;
 
-public class TestGame extends PartyGame {
+import java.io.File;
 
-    public TestGame(@NotNull UserRegistry<? extends User> userRegistry) {
-        super(userRegistry);
+public class TestGame extends PartyGame<TestMap> {
+
+    public TestGame(@NotNull File directory, @NotNull UserRegistry<? extends User> userRegistry, @NotNull TestMap map) {
+        super(directory, userRegistry, map);
     }
 
     @Override

@@ -1,31 +1,37 @@
 package com.github.deroq1337.partygames.core.data.game.provider;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
+import com.github.deroq1337.partygames.api.game.PartyGameMap;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
+import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class PartyGameProvider {
 
-    private final @NotNull PartyGamesGame game;
+    private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull File gamesDirectory;
     private final @NotNull Map<PartyGameManifest, File> foundGames = new ConcurrentHashMap<>();
 
-    public PartyGameProvider(@NotNull PartyGamesGame game, @NotNull File gamesDirectory) {
+    public PartyGameProvider(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull File gamesDirectory) {
         this.game = game;
         this.gamesDirectory = gamesDirectory;
-        
+
         findGames();
     }
 
@@ -44,9 +50,11 @@ public class PartyGameProvider {
         PartyGameManifest manifest = optionalManifest.get();
         foundGames.put(manifest, file);
         System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
+
+        loadGame(manifest);
     }
 
-    public Optional<PartyGame> loadGame(@NotNull PartyGameManifest manifest) {
+    public Optional<PartyGame<?>> loadGame(@NotNull PartyGameManifest manifest) {
         String gameName = manifest.getName();
         File file = Optional.ofNullable(foundGames.get(manifest))
                 .orElseThrow(() -> new NoSuchElementException("Game '" + gameName + "' was not found"));
@@ -58,20 +66,48 @@ public class PartyGameProvider {
                 return Optional.empty();
             }
 
-            PartyGame game = (PartyGame) mainClass.getDeclaredConstructor(UserRegistry.class).newInstance(this.game.getUserRegistry());
-            game.onLoad();
-            
-            System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
-            return Optional.of(game);
+            Class<? extends PartyGameMap> mapClass = getMapClass(mainClass);
+            File gameDirectory = manifest.getDirectory(gamesDirectory);
+            CompletableFuture<Optional<PartyGame<?>>> gameFuture = new CompletableFuture<>();
+
+            game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenAccept(gameMap -> {
+                if (gameMap.isEmpty()) {
+                    throw new RuntimeException("Game '" + gameName + "' has no game maps");
+                }
+
+                Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
+                    try {
+                        PartyGame<? extends PartyGameMap> gameInstance = (PartyGame<? extends PartyGameMap>) mainClass
+                                .getDeclaredConstructor(File.class, UserRegistry.class, PartyGameMap.class)
+                                .newInstance(gameDirectory, game.getUserRegistry(), gameMap.get());
+
+                        gameInstance.onLoad();
+                        System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
+                        gameFuture.complete(Optional.of(gameInstance));
+                    } catch (Exception e) {
+                        System.err.println("Error while loading the game: " + e.getMessage());
+                        gameFuture.complete(Optional.empty());
+                    }
+                });
+            }).exceptionally(t -> {
+                System.err.println("Could not get random map for game '" + gameName + "': " + t.getMessage());
+                return null;
+            });
+            return gameFuture.join();
         } catch (Exception e) {
-            System.err.println("Could not load game from file '" + file.getName() + "':");
-            e.printStackTrace();
+            System.err.println("Could not load game from file '" + file.getName() + "': " + e.getMessage());
             return Optional.empty();
         }
     }
 
     public @NotNull Set<PartyGameManifest> getPartyGameManifests() {
         return foundGames.keySet();
+    }
+
+    private @NotNull Class<? extends PartyGameMap> getMapClass(@NotNull Class<?> mainClass) {
+        ParameterizedType genericSuperclass = (ParameterizedType) mainClass.getGenericSuperclass();
+        Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
+        return (Class<? extends PartyGameMap>) actualTypeArguments[0];
     }
 
     private @NotNull List<File> findJars() {
@@ -104,8 +140,8 @@ public class PartyGameProvider {
 
     private @NotNull URLClassLoader getClassLoader(@NotNull File file) throws IOException {
         return new URLClassLoader(
-            new URL[]{file.toURI().toURL()}, 
-            getClass().getClassLoader()
+                new URL[]{file.toURI().toURL()},
+                getClass().getClassLoader()
         );
     }
 
