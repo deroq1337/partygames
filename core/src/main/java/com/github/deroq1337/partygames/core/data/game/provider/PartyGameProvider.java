@@ -5,7 +5,6 @@ import com.github.deroq1337.partygames.api.game.PartyGameMap;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
@@ -84,11 +83,7 @@ public class PartyGameProvider {
                 PartyGame<? extends PartyGameMap> gameInstance = (PartyGame<? extends PartyGameMap>) mainClass
                         .getDeclaredConstructor(File.class, UserRegistry.class, mapClass)
                         .newInstance(gameDirectory, game.getUserRegistry(), gameMap.get());
-
-                Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
-                    gameInstance.onLoad();
-                    System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
-                });
+                System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
                 return Optional.of(gameInstance);
             } catch (Exception e) {
                 System.err.println("Error while loading the game: " + e.getMessage());

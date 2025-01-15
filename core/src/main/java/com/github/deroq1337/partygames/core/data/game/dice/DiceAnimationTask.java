@@ -23,8 +23,8 @@ public class DiceAnimationTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (!player.isOnline() || armorStand.isDead()) {
-            dice.destroy(armorStand);
+        if (!player.isOnline() || player.isDead() || armorStand.isDead()) {
+            dice.destroy();
             cancel();
             return;
         }

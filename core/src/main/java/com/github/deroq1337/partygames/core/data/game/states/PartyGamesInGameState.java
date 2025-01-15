@@ -7,8 +7,10 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameManifest;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesInGameScoreboard;
 import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameChooseTask;
+import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameLoadTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Setter
 public class PartyGamesInGameState implements PartyGamesState {
 
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
@@ -69,7 +72,8 @@ public class PartyGamesInGameState implements PartyGamesState {
                 .orElseThrow(() -> new RuntimeException("Could not load game '" + manifest.getName() + "'"));
         announceGame(manifest);
         playableGames.remove(manifest);
-        this.currentGame = Optional.of(partyGame);
+
+        new PartyGameLoadTask(game, this, partyGame).start();
     }
 
     public void onGameEnd() {
@@ -89,7 +93,7 @@ public class PartyGamesInGameState implements PartyGamesState {
 
     private void announceGame(@NotNull PartyGameManifest manifest) {
         game.getUserRegistry().getUsers().forEach(user -> {
-            user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f));
+            user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f));
             user.sendMessage("game_announcement_name", manifest.getName());
             user.sendMessage("game_announcement_explanation", manifest.getDescription());
         });

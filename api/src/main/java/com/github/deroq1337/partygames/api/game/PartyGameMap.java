@@ -15,7 +15,6 @@ import java.io.File;
 public abstract class PartyGameMap extends YamlConfig {
 
     private @NotNull String name;
-    private @NotNull String world;
 
     public PartyGameMap(@NotNull File file) {
         super(file);

@@ -99,10 +99,13 @@ public class Dice {
         return armorStand;
     }
 
-    protected void destroy(@NotNull ArmorStand armorStand) {
-        armorStand.setHealth(0);
-        armorStand.remove();
-        user.setDice(Optional.empty());
+    public void destroy() {
+        armorStand.ifPresent(armorStand -> {
+            armorStand.setHealth(0);
+            armorStand.remove();
+            user.setDice(Optional.empty());
+        });
+        this.armorStand = Optional.empty();
     }
 
     private void show(@NotNull ArmorStand armorStand) {
