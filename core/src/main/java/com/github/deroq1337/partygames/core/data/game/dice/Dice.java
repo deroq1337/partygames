@@ -26,9 +26,6 @@ import java.util.UUID;
 
 public class Dice {
 
-    private static final double HEAD_HEIGHT_OFFSET = 1.5;
-    private static final double VIEW_DISTANCE = 3.0;
-
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull PartyGamesUser user;
 
@@ -61,14 +58,11 @@ public class Dice {
         }
 
         armorStand.ifPresent(armorStand -> {
-           // int numberOfEyes = ThreadLocalRandom.current().nextInt(1, 6);
+            // int numberOfEyes = ThreadLocalRandom.current().nextInt(1, 6);
             int numberOfEyes = 1;
-            String diceTexture = Optional.ofNullable(config.getDiceTextures().get(numberOfEyes))
-                    .orElseThrow(() -> new NoSuchElementException("Texture for dice with an eye count of " + numberOfEyes + " was not found"));
-
             Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
                 Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                    setTexture(helmet, diceTexture);
+                    setTexture(helmet, config.getTexture());
                     equipment.setHelmet(helmet);
                 });
             });
@@ -94,7 +88,7 @@ public class Dice {
         armorStand.setMarker(true);
 
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        setTexture(head, game.getDiceConfig().getDiceTexture());
+        setTexture(head, game.getDiceConfig().getTexture());
 
         armorStand.getEquipment().setHelmet(head);
         this.armorStand = Optional.of(armorStand);
@@ -124,13 +118,13 @@ public class Dice {
         Location location = player.getLocation();
         Vector direction = location.getDirection();
 
-        Vector offset = direction.multiply(VIEW_DISTANCE);
+        Vector offset = direction.multiply(config.getViewDistanceOffset());
         Location targetLocation = location.clone().add(offset);
         armorStand.teleport(targetLocation);
     }
 
     protected void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        armorStand.teleport(player.getLocation().clone().add(0, HEAD_HEIGHT_OFFSET, 0));
+        armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
     }
 
     private void fixAngle(@NotNull ArmorStand armorStand) {

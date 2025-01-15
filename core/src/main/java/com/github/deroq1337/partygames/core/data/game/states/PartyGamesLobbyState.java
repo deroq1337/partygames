@@ -51,6 +51,10 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
             player.setOp(false);
             player.setGameMode(GameMode.SURVIVAL);
 
+            Optional.ofNullable(game.getMainConfig().getSpawnLocation()).ifPresent(spawnLocation -> {
+                player.teleport(spawnLocation.toBukkitLocation());
+            });
+
             scoreboard.setScoreboard(user);
         });
     }
@@ -63,7 +67,7 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
     @Override
     public boolean canStart() {
         return game.getCurrentState() instanceof PartyGamesLobbyState
-                && game.getUserRegistry().getUsers().size() == 1
+                && game.getUserRegistry().getUsers().size() == game.getMainConfig().getMinPlayers()
                 && game.getBoard().isPresent();
     }
 

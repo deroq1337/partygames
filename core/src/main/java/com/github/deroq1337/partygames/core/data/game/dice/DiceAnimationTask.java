@@ -11,15 +11,21 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class DiceAnimationTask extends BukkitRunnable {
 
-    private static final double ROTATION_SPEED = 0.3;
-
     private final @NotNull Dice dice;
+    private final @NotNull DiceConfig config;
     private final @NotNull Player player;
     private final @NotNull ArmorStand armorStand;
 
     private double xAngle = 0;
     private double yAngle = 0;
     private int ticks = 0;
+
+    public DiceAnimationTask(@NotNull Dice dice, @NotNull Player player, @NotNull ArmorStand armorStand) {
+        this.dice = dice;
+        this.config = dice.getConfig();
+        this.player = player;
+        this.armorStand = armorStand;
+    }
 
     @Override
     public void run() {
@@ -34,13 +40,13 @@ public class DiceAnimationTask extends BukkitRunnable {
             return;
         }
 
-        if (ticks >= dice.getConfig().getDiceRollTime() * 20L) {
+        if (ticks >= config.getRollTime() * 20L) {
             dice.roll();
             return;
         }
 
-        xAngle += ROTATION_SPEED;
-        yAngle += ROTATION_SPEED;
+        xAngle += config.getRotationSpeed();
+        yAngle += config.getRotationSpeed();
         armorStand.setHeadPose(new EulerAngle(xAngle, yAngle, 0));
 
         dice.teleportIntoView(player, armorStand);
