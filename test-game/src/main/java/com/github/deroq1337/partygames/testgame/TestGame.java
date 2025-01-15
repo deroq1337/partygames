@@ -5,9 +5,12 @@ import com.github.deroq1337.partygames.api.state.PartyGameState;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
 import com.github.deroq1337.partygames.testgame.map.TestMap;
+
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Optional;
 
 public class TestGame extends PartyGame<TestMap> {
 
@@ -17,7 +20,13 @@ public class TestGame extends PartyGame<TestMap> {
 
     @Override
     public void onLoad() {
-        System.out.println("lil test");
+        userRegistry.getAliveUsers().forEach(user -> {
+            Optional.ofNullable(map.getSpawnLocation()).ifPresent(spawnLocation -> {
+                Optional.ofNullable(Bukkit.getPlayer(user.getUuid())).ifPresent(player -> {
+                    player.teleport(spawnLocation.toBukkitLocation());
+                });
+            });
+        });
     }
 
     @Override

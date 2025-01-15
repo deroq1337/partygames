@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game.board.serialization;
+package com.github.bukkitnews.partygames.common.serialization;
 
 import lombok.*;
 import org.bukkit.Bukkit;

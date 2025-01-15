@@ -23,7 +23,7 @@ public class PartyGamesInGameState implements PartyGamesState {
     private final @NotNull GameScoreboard scoreboard;
     private final @NotNull Set<PartyGameManifest> playableGames;
 
-    private Optional<PartyGame> currentGame = Optional.empty();
+    private Optional<PartyGame<?>> currentGame = Optional.empty();
 
     public PartyGamesInGameState(@NotNull PartyGamesGame<PartyGamesUser> game) {
         this.game = game;
@@ -65,7 +65,7 @@ public class PartyGamesInGameState implements PartyGamesState {
     }
 
     public void playGame(@NotNull PartyGameManifest manifest) {
-        PartyGame partyGame = game.getGameProvider().loadGame(manifest)
+        PartyGame<?> partyGame = game.getGameProvider().loadGame(manifest)
                 .orElseThrow(() -> new RuntimeException("Could not load game '" + manifest.getName() + "'"));
         announceGame(manifest);
         playableGames.remove(manifest);

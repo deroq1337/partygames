@@ -34,8 +34,9 @@ public class DefaultPartyGameMapManager implements PartyGameMapManager {
                 File randomFile = fileList.get(ThreadLocalRandom.current().nextInt(fileList.size()));
 
                 try {
-                    return (M) mapClass.getDeclaredConstructor(File.class).newInstance(randomFile);
+                    return (M) mapClass.getDeclaredConstructor(File.class).newInstance(randomFile).load(mapClass);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.err.println("Could not instantiate map " + mapClass + ": " + e.getMessage());
                     return null;
                 }

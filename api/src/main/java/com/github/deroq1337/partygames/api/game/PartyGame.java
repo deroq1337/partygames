@@ -13,14 +13,13 @@ import java.io.File;
 @Getter
 public abstract class PartyGame<M extends PartyGameMap> {
 
-    private final @NotNull File directory;
-    private final @NotNull UserRegistry<? extends User> userRegistry;
-    private final @NotNull M map;
+    protected final @NotNull File directory;
+    protected final @NotNull UserRegistry<? extends User> userRegistry;
+    protected final @NotNull M map;
 
     public abstract void onLoad();
 
     public abstract void onUnload();
 
     public abstract @NotNull PartyGameState getState();
-
 }

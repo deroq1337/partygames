@@ -46,12 +46,9 @@ public class PartyGameProvider {
             return;
         }
 
-
         PartyGameManifest manifest = optionalManifest.get();
         foundGames.put(manifest, file);
         System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
-
-        loadGame(manifest);
     }
 
     public Optional<PartyGame<?>> loadGame(@NotNull PartyGameManifest manifest) {
@@ -66,48 +63,38 @@ public class PartyGameProvider {
                 return Optional.empty();
             }
 
-            Class<? extends PartyGameMap> mapClass = getMapClass(mainClass);
-            File gameDirectory = manifest.getDirectory(gamesDirectory);
-            CompletableFuture<Optional<PartyGame<?>>> gameFuture = new CompletableFuture<>();
-
-            game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenAccept(gameMap -> {
-                if (gameMap.isEmpty()) {
-                    throw new RuntimeException("Game '" + gameName + "' has no game maps");
-                }
-
-                Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
-                    try {
-                        PartyGame<? extends PartyGameMap> gameInstance = (PartyGame<? extends PartyGameMap>) mainClass
-                                .getDeclaredConstructor(File.class, UserRegistry.class, PartyGameMap.class)
-                                .newInstance(gameDirectory, game.getUserRegistry(), gameMap.get());
-
-                        gameInstance.onLoad();
-                        System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
-                        gameFuture.complete(Optional.of(gameInstance));
-                    } catch (Exception e) {
-                        System.err.println("Error while loading the game: " + e.getMessage());
-                        gameFuture.complete(Optional.empty());
-                    }
-                });
-            }).exceptionally(t -> {
-                System.err.println("Could not get random map for game '" + gameName + "': " + t.getMessage());
-                return null;
-            });
-            return gameFuture.join();
+            return instantiateGame(manifest, mainClass, gameName).join();
         } catch (Exception e) {
             System.err.println("Could not load game from file '" + file.getName() + "': " + e.getMessage());
             return Optional.empty();
         }
     }
 
-    public @NotNull Set<PartyGameManifest> getPartyGameManifests() {
-        return foundGames.keySet();
-    }
+    private @NotNull CompletableFuture<Optional<PartyGame<?>>> instantiateGame(@NotNull PartyGameManifest manifest, @NotNull Class<?> mainClass, @NotNull String gameName) {
+        Class<? extends PartyGameMap> mapClass = getMapClass(mainClass);
+        File gameDirectory = manifest.getDirectory(gamesDirectory);
 
-    private @NotNull Class<? extends PartyGameMap> getMapClass(@NotNull Class<?> mainClass) {
-        ParameterizedType genericSuperclass = (ParameterizedType) mainClass.getGenericSuperclass();
-        Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
-        return (Class<? extends PartyGameMap>) actualTypeArguments[0];
+        return game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenApply(gameMap -> {
+            if (gameMap.isEmpty()) {
+                System.err.println("Game '" + gameName + "' has no game maps");
+                return Optional.empty();
+            }
+
+            try {
+                PartyGame<? extends PartyGameMap> gameInstance = (PartyGame<? extends PartyGameMap>) mainClass
+                        .getDeclaredConstructor(File.class, UserRegistry.class, mapClass)
+                        .newInstance(gameDirectory, game.getUserRegistry(), gameMap.get());
+
+                Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
+                    gameInstance.onLoad();
+                    System.out.println("Loaded game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
+                });
+                return Optional.of(gameInstance);
+            } catch (Exception e) {
+                System.err.println("Error while loading the game: " + e.getMessage());
+                return Optional.empty();
+            }
+        });
     }
 
     private @NotNull List<File> findJars() {
@@ -138,6 +125,10 @@ public class PartyGameProvider {
         }
     }
 
+    public @NotNull Set<PartyGameManifest> getPartyGameManifests() {
+        return foundGames.keySet();
+    }
+
     private @NotNull URLClassLoader getClassLoader(@NotNull File file) throws IOException {
         return new URLClassLoader(
                 new URL[]{file.toURI().toURL()},
@@ -151,5 +142,11 @@ public class PartyGameProvider {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private @NotNull Class<? extends PartyGameMap> getMapClass(@NotNull Class<?> mainClass) {
+        ParameterizedType genericSuperclass = (ParameterizedType) mainClass.getGenericSuperclass();
+        Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
+        return (Class<? extends PartyGameMap>) actualTypeArguments[0];
     }
 }

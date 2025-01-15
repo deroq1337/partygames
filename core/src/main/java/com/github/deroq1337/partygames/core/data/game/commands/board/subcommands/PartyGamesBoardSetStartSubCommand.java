@@ -2,7 +2,7 @@ package com.github.deroq1337.partygames.core.data.game.commands.board.subcommand
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
-import com.github.deroq1337.partygames.core.data.game.board.serialization.MapDirectedLocation;
+import com.github.bukkitnews.partygames.common.serialization.MapDirectedLocation;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardSubCommand;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.entity.Player;

@@ -38,11 +38,11 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
     private final @NotNull PartyGames partyGames;
     private final @NotNull MainConfig mainConfig;
     private final @NotNull DiceConfig diceConfig;
+    private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
     private final @NotNull PartyGameProvider gameProvider;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull PartyGamesBoardManager boardManager;
     private final @NotNull Map<Class<? extends PartyGameMap>, PartyGameMapManager> gameMapManagerMap = new HashMap<>();
-    private final @NotNull UserRegistry<PartyGamesUser> userRegistry;
 
     private @NotNull PartyGamesState currentState;
     private Optional<PartyGamesBoard> board = Optional.empty();
@@ -52,10 +52,10 @@ public class DefaultPartyGamesGame implements PartyGamesGame<PartyGamesUser> {
         this.partyGames = partyGames;
         this.mainConfig = new MainConfig(new File("plugins/partygames/configs/config.yml")).load(MainConfig.class);
         this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load(DiceConfig.class);
+        this.userRegistry = new PartyGamesUserRegistry(this);
         this.gameProvider = new PartyGameProvider(this, new File("plugins/partygames/games/"));
         this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
         this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
-        this.userRegistry = new PartyGamesUserRegistry(this);
 
         this.currentState = new PartyGamesLobbyState(this);
         this.board = boardManager.getRandomBoard().join();

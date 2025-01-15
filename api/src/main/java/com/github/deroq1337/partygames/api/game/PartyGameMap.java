@@ -20,6 +20,4 @@ public abstract class PartyGameMap extends YamlConfig {
     public PartyGameMap(@NotNull File file) {
         super(file);
     }
-
-    public abstract void init();
 }
