@@ -9,6 +9,8 @@ public interface User {
 
     void sendMessage(@NotNull String key, Object... params);
 
+    void sendTitle(@NotNull String key, Object... params);
+
     @NotNull UUID getUuid();
 
     @NotNull Locale getLocale();

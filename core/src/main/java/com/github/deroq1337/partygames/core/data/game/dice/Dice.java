@@ -79,13 +79,15 @@ public class Dice {
                 show(armorStand);
 
                 player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1f, 1f);
-                user.goToField(numberOfEyes);
             });
+
+            user.sendMessage("dice_rolled", numberOfEyes);
+            user.goToField(numberOfEyes);
             this.rolled = true;
         });
     }
 
-    protected @NotNull ArmorStand spawn(Location location) {
+    protected @NotNull ArmorStand spawn(@NotNull Location location) {
         ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
         armorStand.setGravity(false);
         armorStand.setVisible(false);

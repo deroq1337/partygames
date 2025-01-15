@@ -49,6 +49,13 @@ public class PartyGamesUser implements User {
     }
 
     @Override
+    public void sendTitle(@NotNull String key, Object... params) {
+        getBukkitPlayer().ifPresent(player -> {
+            player.sendTitle(getMessage(key, params), null, 10, 70, 20);
+        });
+    }
+
+    @Override
     public @NotNull String getMessage(@NotNull String key, Object... params) {
         return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(game.getLanguageManager().getMessage(locale, key), params));
     }

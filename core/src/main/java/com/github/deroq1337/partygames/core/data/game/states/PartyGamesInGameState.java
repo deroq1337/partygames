@@ -94,6 +94,7 @@ public class PartyGamesInGameState implements PartyGamesState {
     private void announceGame(@NotNull PartyGameManifest manifest) {
         game.getUserRegistry().getUsers().forEach(user -> {
             user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f));
+            user.sendTitle("game_announcement_title", manifest.getName());
             user.sendMessage("game_announcement_name", manifest.getName());
             user.sendMessage("game_announcement_explanation", manifest.getDescription());
         });
