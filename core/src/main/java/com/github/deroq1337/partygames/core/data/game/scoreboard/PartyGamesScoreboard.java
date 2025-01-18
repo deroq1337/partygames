@@ -30,39 +30,34 @@ public abstract class PartyGamesScoreboard implements GameScoreboard<DefaultPart
 
     @Override
     public void setScoreboard(@NotNull DefaultPartyGamesUser user) {
-        Optional.ofNullable(Bukkit.getScoreboardManager()).ifPresent(scoreboardManager -> {
-            Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
-            Objective objective = scoreboard.registerNewObjective("partygames", Criteria.DUMMY, "§lGommeHD Test");
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        user.getBukkitPlayer().ifPresent(player -> {
+            Optional.ofNullable(Bukkit.getScoreboardManager()).ifPresent(scoreboardManager -> {
+                Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
+                Objective objective = scoreboard.registerNewObjective("partygames", Criteria.DUMMY, "§lGommeHD Test");
+                objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-            AtomicInteger scoreIndex = new AtomicInteger(scoreboardScores.size() * 2 + (scoreboardScores.size() - 1));
-            // empty score as first line
-            setEmptyScore(objective, scoreIndex.get());
-            scoreIndex.getAndDecrement();
+                AtomicInteger scoreIndex = new AtomicInteger(scoreboardScores.size() * 2 + (scoreboardScores.size() - 1));
+                setEmptyScore(objective, scoreIndex.getAndDecrement());
 
-            for (PartyGamesScoreboardScore scoreboardScore : scoreboardScores) {
-                scoreboardScore.getName().ifPresent(scoreName -> {
-                    Score score = objective.getScore(user.getMessage(scoreName));
-                    score.setScore(scoreIndex.get());
-                    scoreIndex.set(scoreIndex.get() - 1);
-                });
+                for (PartyGamesScoreboardScore scoreboardScore : scoreboardScores) {
+                    scoreboardScore.getName().ifPresent(scoreName -> addScore(objective, user.getMessage(scoreName), scoreIndex.getAndDecrement()));
 
-                Team team = getTeam(scoreboard, scoreboardScore);
-                String entry = generateRandomEntry(scoreboard);
-                team.addEntry(entry);
-                team.setPrefix(user.getMessage(scoreboardScore.getValue()));
-                objective.getScore(entry).setScore(scoreIndex.get());
-                scoreboardScore.setEntry(Optional.of(entry));
-                scoreIndex.getAndDecrement();
+                    Team team = getTeam(scoreboard, scoreboardScore);
+                    String entry = generateRandomEntry(scoreboard);
+                    team.addEntry(entry);
+                    team.setPrefix(user.getMessage(scoreboardScore.getValue()));
 
-                if (scoreboardScore.isFreeSpace()) {
-                    setEmptyScore(objective, scoreIndex.get());
-                    scoreIndex.getAndDecrement();
+                    addScore(objective, entry, scoreIndex.getAndDecrement());
+                    scoreboardScore.setEntry(Optional.of(entry));
+
+                    if (scoreboardScore.isFreeSpace()) {
+                        setEmptyScore(objective, scoreIndex.getAndDecrement());
+                    }
                 }
-            }
 
-            user.getBukkitPlayer().ifPresent(player -> player.setScoreboard(scoreboard));
-            startUpdateScoreboardTask(user);
+                player.setScoreboard(scoreboard);
+                startUpdateScoreboardTask(user);
+            });
         });
     }
 
@@ -94,6 +89,11 @@ public abstract class PartyGamesScoreboard implements GameScoreboard<DefaultPart
     private @NotNull Team getTeam(@NotNull Scoreboard scoreboard, @NotNull PartyGamesScoreboardScore scoreboardScore) {
         return Optional.ofNullable(scoreboard.getTeam(scoreboardScore.getTeamName()))
                 .orElseGet(() -> scoreboard.registerNewTeam(scoreboardScore.getTeamName()));
+    }
+
+    private void addScore(@NotNull Objective objective, @NotNull String name, int score) {
+        Score scoreEntry = objective.getScore(name);
+        scoreEntry.setScore(score);
     }
 
     private @NotNull String generateRandomEntry(@NotNull Scoreboard scoreboard) {
