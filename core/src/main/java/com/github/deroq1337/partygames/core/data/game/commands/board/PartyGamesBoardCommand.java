@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardAddFieldSubCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardCreateSubCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.subcommands.PartyGamesBoardSetStartSubCommand;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,10 +19,10 @@ import java.util.stream.Stream;
 
 public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull Map<String, PartyGamesBoardSubCommand> subCommandMap;
 
-    public PartyGamesBoardCommand(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesBoardCommand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         this.subCommandMap = Stream.of(
                 new PartyGamesBoardCreateSubCommand(game),
@@ -39,13 +39,13 @@ public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Optional<PartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
+        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
         if (optionalUser.isEmpty()) {
             player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
             return true;
         }
 
-        PartyGamesUser user = optionalUser.get();
+        DefaultPartyGamesUser user = optionalUser.get();
         if (!player.hasPermission("partygames.board")) {
             user.sendMessage("no_permission");
             return true;

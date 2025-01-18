@@ -11,6 +11,6 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode
 public class CurrentGame {
 
-    private final @NotNull PartyGame<?, ?> partyGame;
+    private final @NotNull PartyGame<?, ?, ?> partyGame;
     private final @NotNull PartyGameManifest manifest;
 }

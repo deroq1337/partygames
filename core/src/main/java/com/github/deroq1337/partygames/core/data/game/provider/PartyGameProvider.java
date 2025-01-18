@@ -3,9 +3,9 @@ package com.github.deroq1337.partygames.core.data.game.provider;
 import com.github.deroq1337.partygames.api.config.YamlConfig;
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.game.PartyGameMap;
-import com.github.deroq1337.partygames.api.user.UserRegistry;
+import com.github.deroq1337.partygames.api.user.PartyGamesUserRegistry;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
@@ -22,12 +22,12 @@ import java.util.jar.JarFile;
 
 public class PartyGameProvider {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull File gamesDirectory;
     private final @NotNull Map<PartyGameManifest, File> foundGames = new ConcurrentHashMap<>();
     private final @NotNull PartyGameClassLoader gameClassLoader = new PartyGameClassLoader();
 
-    public PartyGameProvider(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull File gamesDirectory) {
+    public PartyGameProvider(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull File gamesDirectory) {
         this.game = game;
         this.gamesDirectory = gamesDirectory;
 
@@ -50,7 +50,7 @@ public class PartyGameProvider {
         System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
     }
 
-    public Optional<PartyGame<?, ?>> loadGame(@NotNull PartyGameManifest manifest) {
+    public Optional<PartyGame<?, ?, ?>> loadGame(@NotNull PartyGameManifest manifest) {
         String gameName = manifest.getName();
         File file = Optional.ofNullable(foundGames.get(manifest))
                 .orElseThrow(() -> new NoSuchElementException("Game '" + gameName + "' was not found"));
@@ -81,7 +81,7 @@ public class PartyGameProvider {
         }
     }
 
-    private @NotNull CompletableFuture<Optional<PartyGame<?, ?>>> instantiateGame(@NotNull PartyGameManifest manifest, @NotNull Class<?> mainClass, @NotNull String gameName) {
+    private @NotNull CompletableFuture<Optional<PartyGame<?, ?, ?>>> instantiateGame(@NotNull PartyGameManifest manifest, @NotNull Class<?> mainClass, @NotNull String gameName) {
         Class<? extends PartyGameMap> mapClass = getMapClass(mainClass);
         Class<? extends YamlConfig> configClass = getConfigClass(mainClass);
         File gameDirectory = manifest.getDirectory(gamesDirectory);
@@ -93,8 +93,8 @@ public class PartyGameProvider {
             }
 
             try {
-                PartyGame<? extends PartyGameMap, ? extends YamlConfig> gameInstance = (PartyGame<? extends PartyGameMap, ? extends YamlConfig>) mainClass
-                        .getDeclaredConstructor(UserRegistry.class, mapClass, File.class, configClass)
+                PartyGame<?, ?, ?> gameInstance = (PartyGame<?, ?, ?>) mainClass
+                        .getDeclaredConstructor(PartyGamesUserRegistry.class, mapClass, File.class, configClass)
                         .newInstance(game.getUserRegistry(), gameMap.get(), gameDirectory, instantiateGameConfig(configClass, gameDirectory));
 
                 System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));

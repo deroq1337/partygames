@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>core</module>
-        <module>test-game</module>
+        <module>blockjump-game</module>
         <module>api</module>
         <module>common</module>
         <module>game-base</module>

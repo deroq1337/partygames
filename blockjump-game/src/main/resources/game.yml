@@ -1,0 +1,5 @@
+name: BlockJump
+description: Springe geschickt auf die erscheinenden Blöcke und erklimme die Spitze, bevor es deine Gegner tun! Schnelligkeit und Präzision sind der Schlüssel zum Sieg in diesem spannenden Wettlauf nach oben.
+main: com.github.deroq1337.partygames.game.blockjump.BlockJumpGame
+version: 1.0
+author: deroq

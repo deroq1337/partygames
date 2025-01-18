@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.bukkitnews.partygames.common.tasks.CountdownTask;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
@@ -14,10 +14,10 @@ import java.util.Optional;
 
 public class PartyGamesLobbyCountdown extends Countdown {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private Optional<BukkitTask> task = Optional.empty();
 
-    public PartyGamesLobbyCountdown(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull GameState gameState) {
+    public PartyGamesLobbyCountdown(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull GameState gameState) {
         super(gameState, 60, 60, 30, 10, 5, 4, 3, 2, 1);
         this.game = game;
     }

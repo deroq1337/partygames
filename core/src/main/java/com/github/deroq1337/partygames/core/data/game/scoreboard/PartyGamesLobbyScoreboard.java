@@ -1,9 +1,8 @@
 package com.github.deroq1337.partygames.core.data.game.scoreboard;
 
-import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.models.PartyGamesScoreboardScore;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,13 +11,13 @@ import java.util.Optional;
 
 public class PartyGamesLobbyScoreboard extends PartyGamesScoreboard {
 
-    public PartyGamesLobbyScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesLobbyScoreboard(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         super(game);
     }
 
     @Override
-    public <U extends User> void updateScoreboard(@NotNull U user) {
-        ((PartyGamesUser) user).getBukkitPlayer().ifPresent(player -> {
+    public void updateScoreboard(@NotNull DefaultPartyGamesUser user) {
+        user.getBukkitPlayer().ifPresent(player -> {
             Scoreboard scoreboard = player.getScoreboard();
 
             String mapPrefix = game.getBoard()

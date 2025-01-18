@@ -2,7 +2,7 @@ package com.github.deroq1337.partygames.core.data.game.listeners;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesInGameState;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlayerInteractListener implements Listener {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
 
-    public PlayerInteractListener(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PlayerInteractListener(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         game.getPartyGames().getServer().getPluginManager().registerEvents(this, game.getPartyGames());
     }

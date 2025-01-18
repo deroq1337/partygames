@@ -1,10 +1,9 @@
 package com.github.deroq1337.partygames.core.data.game.scoreboard;
 
 import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
-import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.models.PartyGamesScoreboardScore;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,20 +16,20 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class PartyGamesScoreboard implements GameScoreboard {
+public abstract class PartyGamesScoreboard implements GameScoreboard<DefaultPartyGamesUser> {
 
-    protected final @NotNull PartyGamesGame<PartyGamesUser> game;
+    protected final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     protected final @NotNull List<PartyGamesScoreboardScore> scoreboardScores;
 
     private Optional<BukkitTask> task = Optional.empty();
 
-    public PartyGamesScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesScoreboard(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         this.scoreboardScores = getScoreboardScores();
     }
 
     @Override
-    public <U extends User> void setScoreboard(@NotNull U user) {
+    public void setScoreboard(@NotNull DefaultPartyGamesUser user) {
         Optional.ofNullable(Bukkit.getScoreboardManager()).ifPresent(scoreboardManager -> {
             Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
             Objective objective = scoreboard.registerNewObjective("partygames", Criteria.DUMMY, "§lGommeHD Test");
@@ -62,13 +61,13 @@ public abstract class PartyGamesScoreboard implements GameScoreboard {
                 }
             }
 
-            ((PartyGamesUser) user).getBukkitPlayer().ifPresent(player -> player.setScoreboard(scoreboard));
+            user.getBukkitPlayer().ifPresent(player -> player.setScoreboard(scoreboard));
             startUpdateScoreboardTask(user);
         });
     }
 
     @Override
-    public abstract <U extends User> void updateScoreboard(@NotNull U user);
+    public abstract void updateScoreboard(@NotNull DefaultPartyGamesUser user);
 
     @Override
     public void cancelScoreboardUpdate() {
@@ -78,7 +77,7 @@ public abstract class PartyGamesScoreboard implements GameScoreboard {
 
     public abstract @NotNull List<PartyGamesScoreboardScore> getScoreboardScores();
 
-    private void startUpdateScoreboardTask(@NotNull User user) {
+    private void startUpdateScoreboardTask(@NotNull DefaultPartyGamesUser user) {
         this.task = Optional.of(new BukkitRunnable() {
             @Override
             public void run() {

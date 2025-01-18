@@ -1,7 +1,7 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class DiceTask extends BukkitRunnable {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull Dice dice;
     private final @NotNull Player player;
 

@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.listeners;
 
-import com.github.deroq1337.partygames.api.state.CountdownableState;
+import com.github.deroq1337.partygames.api.state.Countdownable;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import org.bukkit.event.EventHandler;
@@ -22,8 +22,8 @@ public class PlayerQuitListener implements Listener {
         PartyGamesState gameState = game.getCurrentState();
         gameState.onPlayerQuit(event.getPlayer().getUniqueId());
 
-        if (gameState instanceof CountdownableState) {
-            ((CountdownableState) gameState).check();
+        if (gameState instanceof Countdownable) {
+            ((Countdownable) gameState).check();
         }
     }
 }

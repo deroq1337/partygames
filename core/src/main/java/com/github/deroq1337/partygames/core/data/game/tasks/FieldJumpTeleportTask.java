@@ -2,7 +2,7 @@ package com.github.deroq1337.partygames.core.data.game.tasks;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class FieldJumpTeleportTask extends BukkitRunnable implements Task {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
-    private final @NotNull PartyGamesUser user;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
+    private final @NotNull DefaultPartyGamesUser user;
     private final @NotNull Player player;
     private final @NotNull Location fieldLocation;
     private final @NotNull MainConfig mainConfig;

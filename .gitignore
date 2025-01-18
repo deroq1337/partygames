@@ -15,8 +15,12 @@ target/
 api/target/
 core/target/
 core/dependency-reduced-pom.xml
-test-game/target/
-test-game/dependency-reduced-pom.xml
+blockjump-game/target/
+blockjump-game/dependency-reduced-pom.xml
+common/target/
+common/dependency-reduced-pom.xml
+game-base/target/
+game-base/dependency-reduced-pom.xml
 
 ### Eclipse ###
 .apt_generated

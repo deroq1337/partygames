@@ -10,7 +10,7 @@ import com.github.deroq1337.partygames.core.data.game.provider.PartyGameManifest
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesInGameScoreboard;
 import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameChooseTask;
 import com.github.deroq1337.partygames.core.data.game.tasks.PartyGameLoadTask;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Sound;
@@ -24,13 +24,13 @@ import java.util.UUID;
 @Setter
 public class PartyGamesInGameState implements PartyGamesState {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
-    private final @NotNull GameScoreboard scoreboard;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
+    private final @NotNull GameScoreboard<DefaultPartyGamesUser> scoreboard;
     private final @NotNull Set<PartyGameManifest> playableGames;
 
     private Optional<CurrentGame> currentGame = Optional.empty();
 
-    public PartyGamesInGameState(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesInGameState(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         this.scoreboard = new PartyGamesInGameScoreboard(game);
         this.playableGames = game.getGameProvider().getPartyGameManifests();
@@ -59,7 +59,7 @@ public class PartyGamesInGameState implements PartyGamesState {
 
     @Override
     public void onPlayerJoin(@NotNull UUID uuid) {
-        PartyGamesUser user = game.getUserRegistry().addUser(uuid, false);
+        DefaultPartyGamesUser user = game.getUserRegistry().addUser(uuid, false);
         scoreboard.setScoreboard(user);
     }
 
@@ -69,7 +69,7 @@ public class PartyGamesInGameState implements PartyGamesState {
     }
 
     public void playGame(@NotNull PartyGameManifest manifest) {
-        PartyGame<?, ?> partyGame = game.getGameProvider().loadGame(manifest)
+        PartyGame<?, ?, ?> partyGame = game.getGameProvider().loadGame(manifest)
                 .orElseThrow(() -> new RuntimeException("Could not load game '" + manifest.getName() + "'"));
         announceGame(manifest);
         playableGames.remove(manifest);

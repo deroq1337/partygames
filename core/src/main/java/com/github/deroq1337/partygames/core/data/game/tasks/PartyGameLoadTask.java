@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.dice.Dice;
 import com.github.deroq1337.partygames.core.data.game.models.CurrentGame;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesInGameState;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PartyGameLoadTask extends BukkitRunnable implements Task {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull PartyGamesInGameState state;
     private final @NotNull CurrentGame currentGame;
 

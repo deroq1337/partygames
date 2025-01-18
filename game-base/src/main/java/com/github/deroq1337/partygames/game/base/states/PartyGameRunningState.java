@@ -2,7 +2,6 @@ package com.github.deroq1337.partygames.game.base.states;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.state.PartyGameState;
-import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -13,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class PartyGameRunningState implements PartyGameState {
 
-    private final @NotNull PartyGame<?, ? extends PartyGameConfig> partyGame;
+    private final @NotNull PartyGame<?, ?, ?> partyGame;
 
     @Override
     public void enter() {

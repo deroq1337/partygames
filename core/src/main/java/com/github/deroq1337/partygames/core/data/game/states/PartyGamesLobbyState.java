@@ -2,13 +2,13 @@ package com.github.deroq1337.partygames.core.data.game.states;
 
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
-import com.github.deroq1337.partygames.api.state.CountdownableState;
+import com.github.deroq1337.partygames.api.state.Countdownable;
 import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.countdowns.PartyGamesLobbyCountdown;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.PartyGamesLobbyScoreboard;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.Getter;
 import org.bukkit.*;
 import org.jetbrains.annotations.NotNull;
@@ -17,13 +17,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Getter
-public class PartyGamesLobbyState implements PartyGamesState, CountdownableState {
+public class PartyGamesLobbyState implements PartyGamesState, Countdownable {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull Countdown countdown;
-    private final @NotNull GameScoreboard scoreboard;
+    private final @NotNull GameScoreboard<DefaultPartyGamesUser> scoreboard;
 
-    public PartyGamesLobbyState(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesLobbyState(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         this.countdown = new PartyGamesLobbyCountdown(game, this);
         this.scoreboard = new PartyGamesLobbyScoreboard(game);
@@ -41,7 +41,7 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
 
     @Override
     public void onPlayerJoin(@NotNull UUID uuid) {
-        PartyGamesUser user = game.getUserRegistry().addUser(uuid, true);
+        DefaultPartyGamesUser user = game.getUserRegistry().addUser(uuid, true);
         user.getBukkitPlayer().ifPresent(player -> {
             player.getInventory().clear();
             player.setHealth(20);

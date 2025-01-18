@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.bukkitnews.partygames.common.serialization.MapDirectedLocation;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardSubCommand;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,12 +12,12 @@ import java.util.Optional;
 
 public class PartyGamesBoardSetStartSubCommand extends PartyGamesBoardSubCommand {
 
-    public PartyGamesBoardSetStartSubCommand(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesBoardSetStartSubCommand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         super(game, "setStart");
     }
 
     @Override
-    protected void execute(@NotNull PartyGamesUser user, @NotNull Player player, @NotNull String[] args) {
+    protected void execute(@NotNull DefaultPartyGamesUser user, @NotNull Player player, @NotNull String[] args) {
         if (args.length < 1) {
             user.sendMessage("command_board_set_start_syntax");
             return;

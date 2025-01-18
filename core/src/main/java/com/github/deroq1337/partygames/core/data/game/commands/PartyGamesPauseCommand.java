@@ -4,7 +4,7 @@ import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,9 +15,9 @@ import java.util.Optional;
 
 public class PartyGamesPauseCommand implements CommandExecutor {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
 
-    public PartyGamesPauseCommand(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesPauseCommand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         Optional.ofNullable(game.getPartyGames().getCommand("pause")).ifPresent(pluginCommand -> pluginCommand.setExecutor(this));
     }
@@ -28,13 +28,13 @@ public class PartyGamesPauseCommand implements CommandExecutor {
             return true;
         }
 
-        Optional<PartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
+        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
         if (optionalUser.isEmpty()) {
             player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
             return true;
         }
 
-        PartyGamesUser user = optionalUser.get();
+        DefaultPartyGamesUser user = optionalUser.get();
         if (!player.hasPermission("partygames.pause")) {
             user.sendMessage("no_permission");
             return true;

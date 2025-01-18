@@ -1,7 +1,7 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import com.github.deroq1337.partygames.core.data.game.utils.SkinTexture;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,25 +20,24 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 public class Dice {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
-    private final @NotNull PartyGamesUser user;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
+    private final @NotNull DefaultPartyGamesUser user;
 
     @Getter(value = AccessLevel.PROTECTED)
     private final @NotNull DiceConfig config;
 
-    private Optional<ArmorStand> armorStand;
+    private Optional<ArmorStand> armorStand = Optional.empty();
 
     @Getter
     @Setter
     private boolean rolled;
 
-    public Dice(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull PartyGamesUser user) {
+    public Dice(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull DefaultPartyGamesUser user) {
         this.game = game;
         this.user = user;
         this.config = game.getDiceConfig();

@@ -2,7 +2,7 @@ package com.github.deroq1337.partygames.core.data.game.commands;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,9 +14,9 @@ import java.util.Optional;
 
 public class PartyGamesForceMapCommand implements CommandExecutor {
 
-    private final @NotNull PartyGamesGame<PartyGamesUser> game;
+    private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
 
-    public PartyGamesForceMapCommand(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesForceMapCommand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         this.game = game;
         Optional.ofNullable(game.getPartyGames().getCommand("forcemap")).ifPresent(pluginCommand -> pluginCommand.setExecutor(this));
     }
@@ -27,13 +27,13 @@ public class PartyGamesForceMapCommand implements CommandExecutor {
             return true;
         }
 
-        Optional<PartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
+        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
         if (optionalUser.isEmpty()) {
             player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
             return true;
         }
 
-        PartyGamesUser user = optionalUser.get();
+        DefaultPartyGamesUser user = optionalUser.get();
         if (!player.hasPermission("partygames.forcemap")) {
             user.sendMessage("no_permission");
             return true;

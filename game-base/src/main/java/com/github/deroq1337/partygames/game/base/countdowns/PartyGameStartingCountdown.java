@@ -4,6 +4,8 @@ import com.github.bukkitnews.partygames.common.tasks.CountdownTask;
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.state.GameState;
+import com.github.deroq1337.partygames.api.user.PartyGameUser;
+import com.github.deroq1337.partygames.game.base.PartyGameBase;
 import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -14,16 +16,15 @@ import java.util.Optional;
 
 public class PartyGameStartingCountdown extends Countdown {
 
-    private final @NotNull PartyGame<?, ? extends PartyGameConfig> partyGame;
+    private final @NotNull PartyGame<?, ?, ?> partyGame;
     private final @NotNull Plugin plugin;
 
     private Optional<BukkitTask> task = Optional.empty();
 
-    public PartyGameStartingCountdown(@NotNull PartyGame<?, ? extends PartyGameConfig> partyGame, @NotNull GameState gameState) {
+    public PartyGameStartingCountdown(@NotNull PartyGame<?, ? extends PartyGameConfig, ? extends PartyGameUser> partyGame, @NotNull GameState gameState) {
         super(gameState, partyGame.getGameConfig().getStartingTicks(), partyGame.getGameConfig().getStartingSpecialTicks());
         this.partyGame = partyGame;
-        this.plugin = Optional.ofNullable(Bukkit.getPluginManager().getPlugin("PartyGames"))
-                .orElseThrow(() -> new RuntimeException("Plugin PartyGames not found"));
+        this.plugin = PartyGameBase.getPlugin();
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.commands.board.subcommand
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardSubCommand;
-import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
+import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,12 +11,12 @@ import java.util.Optional;
 
 public class PartyGamesBoardAddFieldSubCommand extends PartyGamesBoardSubCommand {
 
-    public PartyGamesBoardAddFieldSubCommand(@NotNull PartyGamesGame<PartyGamesUser> game) {
+    public PartyGamesBoardAddFieldSubCommand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game) {
         super(game, "addField");
     }
 
     @Override
-    protected void execute(@NotNull PartyGamesUser user, @NotNull Player player, @NotNull String[] args) {
+    protected void execute(@NotNull DefaultPartyGamesUser user, @NotNull Player player, @NotNull String[] args) {
         if (args.length < 2) {
             user.sendMessage("command_board_add_field_syntax");
             return;

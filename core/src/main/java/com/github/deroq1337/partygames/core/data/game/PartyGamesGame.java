@@ -1,11 +1,10 @@
 package com.github.deroq1337.partygames.core.data.game;
 
-import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.game.PartyGameMap;
 import com.github.deroq1337.partygames.api.language.LanguageManager;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
-import com.github.deroq1337.partygames.api.user.User;
-import com.github.deroq1337.partygames.api.user.UserRegistry;
+import com.github.deroq1337.partygames.api.user.PartyGamesUser;
+import com.github.deroq1337.partygames.api.user.PartyGamesUserRegistry;
 import com.github.deroq1337.partygames.core.PartyGames;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Optional;
 
-public interface PartyGamesGame<U extends User> {
+public interface PartyGamesGame<U extends PartyGamesUser> {
 
     @NotNull PartyGames getPartyGames();
 
@@ -34,7 +33,7 @@ public interface PartyGamesGame<U extends User> {
 
     @NotNull PartyGameMapManager getGameMapManager(@NotNull Class<? extends PartyGameMap> mapClass, @NotNull File gameDirectory);
 
-    @NotNull UserRegistry<U> getUserRegistry();
+    @NotNull PartyGamesUserRegistry<U> getUserRegistry();
 
     @NotNull PartyGamesState getCurrentState();
 
