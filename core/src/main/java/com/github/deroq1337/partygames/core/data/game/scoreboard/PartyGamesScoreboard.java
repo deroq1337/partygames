@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.scoreboard;
 
 import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
-import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.models.PartyGamesScoreboardScore;
@@ -9,6 +8,7 @@ import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,12 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class PartyGamesScoreboard implements GameScoreboard {
 
     protected final @NotNull PartyGamesGame<PartyGamesUser> game;
-    private final @NotNull Class<? extends PartyGamesState> gameState;
     protected final @NotNull List<PartyGamesScoreboardScore> scoreboardScores;
 
-    public PartyGamesScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull Class<? extends PartyGamesState> gameState) {
+    private Optional<BukkitTask> task = Optional.empty();
+
+    public PartyGamesScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
         this.game = game;
-        this.gameState = gameState;
         this.scoreboardScores = getScoreboardScores();
     }
 
@@ -70,20 +70,21 @@ public abstract class PartyGamesScoreboard implements GameScoreboard {
     @Override
     public abstract <U extends User> void updateScoreboard(@NotNull U user);
 
+    @Override
+    public void cancelScoreboardUpdate() {
+        task.ifPresent(BukkitTask::cancel);
+        this.task = Optional.empty();
+    }
+
     public abstract @NotNull List<PartyGamesScoreboardScore> getScoreboardScores();
 
     private void startUpdateScoreboardTask(@NotNull User user) {
-        new BukkitRunnable() {
+        this.task = Optional.of(new BukkitRunnable() {
             @Override
             public void run() {
-                if (!game.getCurrentState().getClass().equals(gameState)) {
-                    cancel();
-                    return;
-                }
-
                 updateScoreboard(user);
             }
-        }.runTaskTimer(game.getPartyGames(), 0, 20L);
+        }.runTaskTimer(game.getPartyGames(), 0L, 20L));
     }
 
     private void setEmptyScore(@NotNull Objective objective, int scoreIndex) {

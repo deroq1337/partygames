@@ -33,6 +33,10 @@ public class FieldJumpTask extends BukkitRunnable implements Task {
             return;
         }
 
+        if (player.isFlying()) {
+            player.setFlying(false);
+        }
+
         player.setVelocity(new Vector(0, mainConfig.getFieldJumpVectorY(), 0));
         player.setFallDistance(0f);
 

@@ -60,10 +60,12 @@ public class Dice {
         armorStand.ifPresent(armorStand -> {
             // int numberOfEyes = ThreadLocalRandom.current().nextInt(1, 6);
             int numberOfEyes = 1;
-            Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
-                Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                    setTexture(helmet, config.getTexture());
-                    equipment.setHelmet(helmet);
+            Optional.ofNullable(config.getTextures().get(numberOfEyes)).ifPresent(texture -> {
+                Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
+                    Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
+                        setTexture(helmet, texture);
+                        equipment.setHelmet(helmet);
+                    });
                 });
             });
 

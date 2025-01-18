@@ -1,6 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
-import com.github.deroq1337.partygames.core.data.game.config.YamlConfig;
+import com.github.deroq1337.partygames.api.config.YamlConfig;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 

@@ -3,7 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.countdowns;
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.tasks.CountdownTask;
+import com.github.bukkitnews.partygames.common.tasks.CountdownTask;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -23,7 +23,7 @@ public class PartyGamesLobbyCountdown extends Countdown {
     }
 
     @Override
-    public void startBukkitTask() {
+    public void initBukkitTask() {
         this.task = Optional.of(Bukkit.getScheduler().runTaskTimer(game.getPartyGames(), new CountdownTask(this), 20L, 20L));
     }
 

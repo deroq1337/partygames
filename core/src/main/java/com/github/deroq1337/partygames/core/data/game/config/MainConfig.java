@@ -1,6 +1,7 @@
 package com.github.deroq1337.partygames.core.data.game.config;
 
 import com.github.bukkitnews.partygames.common.serialization.MapDirectedLocation;
+import com.github.deroq1337.partygames.api.config.YamlConfig;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

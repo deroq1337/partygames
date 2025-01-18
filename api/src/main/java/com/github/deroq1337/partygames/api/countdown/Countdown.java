@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.api.countdown;
 
 import com.github.deroq1337.partygames.api.state.GameState;
-import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -21,13 +20,17 @@ public abstract class Countdown {
     private boolean started;
     private boolean running;
 
-    public Countdown(@NotNull GameState gameState, int startTick, int... specialTicks) {
+    public Countdown(@NotNull GameState gameState, int startTick, @NotNull List<Integer> specialTicks) {
         this.gameState = gameState;
         this.startTick = startTick;
-        this.specialTicks = Arrays.stream(specialTicks).boxed().toList();
+        this.specialTicks = specialTicks;
     }
 
-    public abstract void startBukkitTask();
+    public Countdown(@NotNull GameState gameState, int startTick, int... specialTicks) {
+        this(gameState, startTick, Arrays.stream(specialTicks).boxed().toList());
+    }
+
+    public abstract void initBukkitTask();
 
     public abstract void cancelBukkitTask();
 
@@ -39,7 +42,7 @@ public abstract class Countdown {
         this.currentTick = startTick;
         this.started = true;
         this.running = true;
-        startBukkitTask();
+        initBukkitTask();
     }
 
     public void cancel() {
@@ -61,9 +64,7 @@ public abstract class Countdown {
         cancel();
 
         gameState.leave();
-        if (gameState instanceof PartyGamesState) {
-            ((PartyGamesState) gameState).getNextState().ifPresent(GameState::enter);
-        }
+        gameState.getNextState().ifPresent(GameState::enter);
     }
 
     public void decrementCurrentTick() {

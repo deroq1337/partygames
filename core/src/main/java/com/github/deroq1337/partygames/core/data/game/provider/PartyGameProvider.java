@@ -1,5 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.provider;
 
+import com.github.deroq1337.partygames.api.config.YamlConfig;
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.game.PartyGameMap;
 import com.github.deroq1337.partygames.api.user.UserRegistry;
@@ -13,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +25,7 @@ public class PartyGameProvider {
     private final @NotNull PartyGamesGame<PartyGamesUser> game;
     private final @NotNull File gamesDirectory;
     private final @NotNull Map<PartyGameManifest, File> foundGames = new ConcurrentHashMap<>();
+    private final @NotNull PartyGameClassLoader gameClassLoader = new PartyGameClassLoader();
 
     public PartyGameProvider(@NotNull PartyGamesGame<PartyGamesUser> game, @NotNull File gamesDirectory) {
         this.game = game;
@@ -50,13 +50,16 @@ public class PartyGameProvider {
         System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
     }
 
-    public Optional<PartyGame<?>> loadGame(@NotNull PartyGameManifest manifest) {
+    public Optional<PartyGame<?, ?>> loadGame(@NotNull PartyGameManifest manifest) {
         String gameName = manifest.getName();
         File file = Optional.ofNullable(foundGames.get(manifest))
                 .orElseThrow(() -> new NoSuchElementException("Game '" + gameName + "' was not found"));
 
-        try (URLClassLoader classLoader = getClassLoader(file)) {
-            Class<?> mainClass = classLoader.loadClass(manifest.getMain());
+        try {
+            gameClassLoader.loadClasses(manifest, file);
+
+            Class<?> mainClass = gameClassLoader.getLoadedClass(manifest, manifest.getMain())
+                    .orElseThrow(() -> new RuntimeException("Main class '" + manifest.getMain() + "' was not loaded"));
             if (!PartyGame.class.isAssignableFrom(mainClass)) {
                 System.err.println("Main class of game '" + gameName + "' does not implement PartyGame");
                 return Optional.empty();
@@ -69,8 +72,18 @@ public class PartyGameProvider {
         }
     }
 
-    private @NotNull CompletableFuture<Optional<PartyGame<?>>> instantiateGame(@NotNull PartyGameManifest manifest, @NotNull Class<?> mainClass, @NotNull String gameName) {
+    public void unloadGame(@NotNull PartyGameManifest manifest) {
+        try {
+            gameClassLoader.unloadClasses(manifest);
+            System.out.println("Unloaded game '" + manifest.getName() + "'");
+        } catch (Exception e) {
+            System.err.println("Could not unload classes of game '" + manifest.getName() + "': " + e.getMessage());
+        }
+    }
+
+    private @NotNull CompletableFuture<Optional<PartyGame<?, ?>>> instantiateGame(@NotNull PartyGameManifest manifest, @NotNull Class<?> mainClass, @NotNull String gameName) {
         Class<? extends PartyGameMap> mapClass = getMapClass(mainClass);
+        Class<? extends YamlConfig> configClass = getConfigClass(mainClass);
         File gameDirectory = manifest.getDirectory(gamesDirectory);
 
         return game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenApply(gameMap -> {
@@ -80,12 +93,14 @@ public class PartyGameProvider {
             }
 
             try {
-                PartyGame<? extends PartyGameMap> gameInstance = (PartyGame<? extends PartyGameMap>) mainClass
-                        .getDeclaredConstructor(File.class, UserRegistry.class, mapClass)
-                        .newInstance(gameDirectory, game.getUserRegistry(), gameMap.get());
+                PartyGame<? extends PartyGameMap, ? extends YamlConfig> gameInstance = (PartyGame<? extends PartyGameMap, ? extends YamlConfig>) mainClass
+                        .getDeclaredConstructor(UserRegistry.class, mapClass, File.class, configClass)
+                        .newInstance(game.getUserRegistry(), gameMap.get(), gameDirectory, instantiateGameConfig(configClass, gameDirectory));
+
                 System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
                 return Optional.of(gameInstance);
             } catch (Exception e) {
+                e.printStackTrace();
                 System.err.println("Error while loading the game: " + e.getMessage());
                 return Optional.empty();
             }
@@ -124,24 +139,19 @@ public class PartyGameProvider {
         return foundGames.keySet();
     }
 
-    private @NotNull URLClassLoader getClassLoader(@NotNull File file) throws IOException {
-        return new URLClassLoader(
-                new URL[]{file.toURI().toURL()},
-                getClass().getClassLoader()
-        );
-    }
-
-    private @NotNull Class<?> loadClass(@NotNull String className) {
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private @NotNull Class<? extends PartyGameMap> getMapClass(@NotNull Class<?> mainClass) {
         ParameterizedType genericSuperclass = (ParameterizedType) mainClass.getGenericSuperclass();
         Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
         return (Class<? extends PartyGameMap>) actualTypeArguments[0];
+    }
+
+    private @NotNull Class<? extends YamlConfig> getConfigClass(@NotNull Class<?> mainClass) {
+        ParameterizedType genericSuperclass = (ParameterizedType) mainClass.getGenericSuperclass();
+        Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
+        return (Class<? extends YamlConfig>) actualTypeArguments[1];
+    }
+
+    private @NotNull <C extends YamlConfig> C instantiateGameConfig(@NotNull Class<C> configClass, @NotNull File gameDirectory) throws Exception {
+        return configClass.getDeclaredConstructor(File.class).newInstance(new File(gameDirectory, "configs/config.yml")).load(configClass);
     }
 }

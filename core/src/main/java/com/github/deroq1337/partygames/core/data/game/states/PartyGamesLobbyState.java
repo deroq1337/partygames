@@ -3,6 +3,7 @@ package com.github.deroq1337.partygames.core.data.game.states;
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
 import com.github.deroq1337.partygames.api.state.CountdownableState;
+import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.countdowns.PartyGamesLobbyCountdown;
@@ -35,7 +36,7 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
 
     @Override
     public void leave() {
-
+        scoreboard.cancelScoreboardUpdate();
     }
 
     @Override
@@ -72,7 +73,7 @@ public class PartyGamesLobbyState implements PartyGamesState, CountdownableState
     }
 
     @Override
-    public Optional<PartyGamesState> getNextState() {
+    public Optional<GameState> getNextState() {
         return Optional.of(new PartyGamesInGameState(game));
     }
 }

@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.api.state;
 
-import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
-import org.jetbrains.annotations.NotNull;
+import java.util.Optional;
 
 public interface GameState {
 
@@ -9,5 +8,5 @@ public interface GameState {
 
     void leave();
 
-    @NotNull GameScoreboard getScoreboard();
+    Optional<GameState> getNextState();
 }

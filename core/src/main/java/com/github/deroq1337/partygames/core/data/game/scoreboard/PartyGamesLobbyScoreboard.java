@@ -1,10 +1,8 @@
 package com.github.deroq1337.partygames.core.data.game.scoreboard;
 
-import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.api.user.User;
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.scoreboard.models.PartyGamesScoreboardScore;
-import com.github.deroq1337.partygames.core.data.game.states.PartyGamesLobbyState;
 import com.github.deroq1337.partygames.core.data.game.user.PartyGamesUser;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +13,7 @@ import java.util.Optional;
 public class PartyGamesLobbyScoreboard extends PartyGamesScoreboard {
 
     public PartyGamesLobbyScoreboard(@NotNull PartyGamesGame<PartyGamesUser> game) {
-        super(game, PartyGamesLobbyState.class);
+        super(game);
     }
 
     @Override
@@ -33,11 +31,6 @@ public class PartyGamesLobbyScoreboard extends PartyGamesScoreboard {
                     .orElseGet(() -> user.getMessage("scoreboard_lobby_number_of_fields_value", "§cNo board"));
             updatePrefix(scoreboard, "numberOfFields", numberOfFieldsPrefix);
         });
-    }
-
-    @Override
-    public @NotNull Class<? extends GameState> getState() {
-        return PartyGamesLobbyState.class;
     }
 
     @Override

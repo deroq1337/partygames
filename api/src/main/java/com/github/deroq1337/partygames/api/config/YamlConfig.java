@@ -26,6 +26,7 @@ public abstract class YamlConfig {
         this.dumperOptions = new DumperOptions();
         dumperOptions.setPrettyFlow(true);
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
         dumperOptions.setExplicitStart(true);
 
         this.loaderOptions = new LoaderOptions();
