@@ -49,7 +49,7 @@ public class PartyGamesLobbyState implements PartyGamesState, Countdownable {
             player.setLevel(0);
             player.setExp(0);
             player.setFlying(false);
-            player.setOp(false);
+            //player.setOp(false);
             player.setGameMode(GameMode.SURVIVAL);
 
             Optional.ofNullable(game.getMainConfig().getSpawnLocation()).ifPresent(spawnLocation -> {

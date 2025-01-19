@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Dice {
 
@@ -36,6 +36,8 @@ public class Dice {
     @Getter
     @Setter
     private boolean rolled;
+
+    private int diceAnimationTaskId = -1;
 
     public Dice(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull DefaultPartyGamesUser user) {
         this.game = game;
@@ -57,17 +59,6 @@ public class Dice {
         }
 
         armorStand.ifPresent(armorStand -> {
-            // int numberOfEyes = ThreadLocalRandom.current().nextInt(1, 6);
-            int numberOfEyes = 1;
-            Optional.ofNullable(config.getTextures().get(numberOfEyes)).ifPresent(texture -> {
-                Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
-                    Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                        setTexture(helmet, texture);
-                        equipment.setHelmet(helmet);
-                    });
-                });
-            });
-
             user.getBukkitPlayer().ifPresent(player -> {
                 fixAngle(armorStand);
                 teleportAboveHead(player, armorStand);
@@ -76,10 +67,44 @@ public class Dice {
                 player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1f, 1f);
             });
 
-            user.sendMessage("dice_rolled", numberOfEyes);
-            user.goToField(numberOfEyes);
+            stopDiceAnimation();
+
+            int finalNumber = ThreadLocalRandom.current().nextInt(1, 7);
+            Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
+                Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
+                    setTexture(helmet, config.getTextures().get(finalNumber));
+                    equipment.setHelmet(helmet);
+                });
+            });
+
+            user.sendMessage("dice_rolled", finalNumber);
+            user.goToField(finalNumber);
             this.rolled = true;
         });
+    }
+
+    public void startDiceAnimation(Player player) {
+        armorStand.ifPresent(armorStand -> {
+            diceAnimationTaskId = Bukkit.getScheduler().runTaskTimer(game.getPartyGames(), () -> {
+                int randomNumber = ThreadLocalRandom.current().nextInt(1, 7);
+                Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
+                    Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
+                        setTexture(helmet, config.getTextures().get(randomNumber));
+                        equipment.setHelmet(helmet);
+                    });
+                });
+
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
+
+            }, 0L, config.getAnimationSpeed()).getTaskId();
+        });
+    }
+
+    public void stopDiceAnimation() {
+        if (diceAnimationTaskId != -1) {
+            Bukkit.getScheduler().cancelTask(diceAnimationTaskId);
+            diceAnimationTaskId = -1;
+        }
     }
 
     protected @NotNull ArmorStand spawn(@NotNull Location location) {
@@ -115,21 +140,26 @@ public class Dice {
                 .forEach(player -> player.hideEntity(game.getPartyGames(), armorStand));
     }
 
-    protected void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        Location location = player.getLocation();
-        Vector direction = location.getDirection();
-
-        Vector offset = direction.multiply(config.getViewDistanceOffset());
-        Location targetLocation = location.clone().add(offset);
-        armorStand.teleport(targetLocation);
-    }
-
     protected void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
         armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
+
+        if (!config.isRollingDice()) {
+            fixAngle(armorStand);
+        }
     }
 
     private void fixAngle(@NotNull ArmorStand armorStand) {
-        armorStand.setHeadPose(new EulerAngle(0, 0, 0));
+        armorStand.setHeadPose(new EulerAngle(0, config.isRollingDice() ? 0 : Math.toRadians(0), 0));
+    }
+
+    protected void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
+        Location location = player.getLocation().add(
+                player.getLocation().getDirection().multiply(config.getViewDistanceOffset()));
+        armorStand.teleport(location);
+
+        if (!config.isRollingDice()) {
+            fixAngle(armorStand);
+        }
     }
 
     private void setTexture(@NotNull ItemStack item, String texture) {

@@ -42,6 +42,7 @@ public class DiceAnimationTask extends BukkitRunnable {
 
         if (ticks >= config.getRollTime() * 20L) {
             dice.roll();
+            cancel();
             return;
         }
 
@@ -50,9 +51,6 @@ public class DiceAnimationTask extends BukkitRunnable {
         armorStand.setHeadPose(new EulerAngle(xAngle, yAngle, 0));
 
         dice.teleportIntoView(player, armorStand);
-        if (ticks % 4 == 0) {
-            player.playSound(player.getLocation(), Sound.BLOCK_WOOD_STEP, 1f, 1f);
-        }
 
         ticks++;
     }
