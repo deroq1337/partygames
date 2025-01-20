@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game;
 
 import com.github.deroq1337.partygames.api.game.PartyGameMap;
-import com.github.deroq1337.partygames.api.language.LanguageManager;
 import com.github.deroq1337.partygames.api.state.PartyGamesState;
 import com.github.deroq1337.partygames.api.user.PartyGamesUserRegistry;
 import com.github.deroq1337.partygames.core.PartyGames;
@@ -14,7 +13,7 @@ import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesStartCo
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
-import com.github.deroq1337.partygames.core.data.game.language.DefaultLanguageManager;
+import com.github.deroq1337.partygames.core.data.game.language.LanguageManager;
 import com.github.deroq1337.partygames.core.data.game.listeners.*;
 import com.github.deroq1337.partygames.core.data.game.map.DefaultPartyGameMapManager;
 import com.github.deroq1337.partygames.core.data.game.map.PartyGameMapManager;
@@ -54,7 +53,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUs
         this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load(DiceConfig.class);
         this.userRegistry = new DefaultPartyGamesUserRegistry(this);
         this.gameProvider = new PartyGameProvider(this, new File("plugins/partygames/games/"));
-        this.languageManager = new DefaultLanguageManager(new File("plugins/partygames/locales/"));
+        this.languageManager = new LanguageManager(new File("plugins/partygames/locales/"));
         this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
 
         this.currentState = new PartyGamesLobbyState(this);

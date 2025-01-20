@@ -78,8 +78,12 @@ public class PartyGamesInGameState implements PartyGamesState {
     }
 
     public void onGameEnd() {
-        currentGame.ifPresent(endedGame -> game.getGameProvider().unloadGame(endedGame.getManifest()));
-        this.currentGame = Optional.empty();
+        currentGame.ifPresent(endedGame -> {
+            endedGame.getPartyGame().onUnload();
+            game.getGameProvider().unloadGame(endedGame.getManifest());
+
+            this.currentGame = Optional.empty();
+        });
 
         game.getBoard().ifPresent(board -> game.getUserRegistry().getUsers().forEach(user -> {
             user.getBukkitPlayer().ifPresent(player -> player.teleport(user.getLastLocation()));

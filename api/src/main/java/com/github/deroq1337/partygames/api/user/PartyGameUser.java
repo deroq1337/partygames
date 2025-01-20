@@ -5,4 +5,6 @@ import org.jetbrains.annotations.NotNull;
 public interface PartyGameUser {
 
     @NotNull PartyGamesUser getPartyGamesUser();
+
+    int getValue();
 }

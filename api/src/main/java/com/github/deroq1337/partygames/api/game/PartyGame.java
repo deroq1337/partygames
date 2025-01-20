@@ -33,11 +33,19 @@ public abstract class PartyGame<M extends PartyGameMap, C extends YamlConfig, U 
 
     public abstract @NotNull GameScoreboard<U> getScoreboard();
 
-    public @NotNull Collection<U> getUsers() {
-        return users.values();
-    }
-
     public void addUser(@NotNull U user) {
         users.put(user.getPartyGamesUser().getUuid(), user);
+    }
+
+    public void removeUser(@NotNull UUID uuid) {
+        users.remove(uuid);
+    }
+
+    public Optional<U> getUser(@NotNull UUID uuid) {
+        return Optional.ofNullable(users.get(uuid));
+    }
+
+    public @NotNull Collection<U> getUsers() {
+        return users.values();
     }
 }

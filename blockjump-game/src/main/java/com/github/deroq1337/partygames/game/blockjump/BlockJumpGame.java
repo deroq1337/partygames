@@ -7,6 +7,7 @@ import com.github.deroq1337.partygames.api.user.PartyGamesUser;
 import com.github.deroq1337.partygames.api.user.PartyGamesUserRegistry;
 import com.github.deroq1337.partygames.game.base.PartyGameBase;
 import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
+import com.github.deroq1337.partygames.game.blockjump.listeners.PlayerMoveListener;
 import com.github.deroq1337.partygames.game.blockjump.map.BlockJumpMap;
 
 import com.github.deroq1337.partygames.game.blockjump.scoreboard.BlockJumpScoreboard;
@@ -33,12 +34,14 @@ public class BlockJumpGame extends PartyGame<BlockJumpMap, BlockJumpConfig, Bloc
 
     @Override
     public void onLoad() {
-        PartyGameBase.setGame(Optional.of(this));
+        PartyGameBase.init(this);
 
         getUserRegistry().getAliveUsers().forEach(user -> addUser(new BlockJumpUser(user)));
 
         this.currentState = new BlockJumpStartingState(this);
         currentState.enter();
+
+        new PlayerMoveListener(this);
     }
 
     @Override

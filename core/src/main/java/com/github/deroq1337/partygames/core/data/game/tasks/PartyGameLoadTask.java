@@ -25,7 +25,10 @@ public class PartyGameLoadTask extends BukkitRunnable implements Task {
 
     @Override
     public void run() {
+        game.getUserRegistry().getUsers().forEach(user ->
+                user.getBukkitPlayer().ifPresent(player -> user.setLastLocation(player.getLocation())));
         game.getUserRegistry().getAliveUsers().forEach(user -> user.getDice().ifPresent(Dice::destroy));
+
         currentGame.getPartyGame().onLoad();
         state.setCurrentGame(Optional.of(currentGame));
         cancel();

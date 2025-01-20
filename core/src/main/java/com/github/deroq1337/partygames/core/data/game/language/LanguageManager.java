@@ -1,6 +1,5 @@
 package com.github.deroq1337.partygames.core.data.game.language;
 
-import com.github.deroq1337.partygames.api.language.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -8,12 +7,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultLanguageManager implements LanguageManager {
+public class LanguageManager {
 
     private final @NotNull Map<Locale, Translation> localeTranslationMap = new ConcurrentHashMap<>();
     private final @NotNull File messagesFolder;
 
-    public DefaultLanguageManager(@NotNull File messagesFolder) {
+    public LanguageManager(@NotNull File messagesFolder) {
         this.messagesFolder = messagesFolder;
         if (!messagesFolder.exists()) {
             messagesFolder.mkdirs();
@@ -21,7 +20,6 @@ public class DefaultLanguageManager implements LanguageManager {
         loadMessages();
     }
 
-    @Override
     public @NotNull CompletableFuture<Void> loadMessages() {
         return CompletableFuture.runAsync(() -> {
             Optional.ofNullable(messagesFolder.listFiles()).ifPresent(files -> {
@@ -39,7 +37,6 @@ public class DefaultLanguageManager implements LanguageManager {
         });
     }
 
-    @Override
     public void clearMessages() {
         localeTranslationMap.clear();
     }
@@ -58,18 +55,15 @@ public class DefaultLanguageManager implements LanguageManager {
         System.out.println("Loaded locale: " + locale.toLanguageTag());
     }
 
-    @Override
     public @NotNull String getMessage(@NotNull Locale locale, @NotNull String key) {
         return getMessageOptional(locale, key).orElse("N/A");
     }
 
-    @Override
     public Optional<String> getMessageOptional(@NotNull Locale locale, @NotNull String key) {
         return Optional.ofNullable(localeTranslationMap.get(locale))
                 .flatMap(translation -> translation.getMessage(key));
     }
 
-    @Override
     public @NotNull Set<Locale> getLocales() {
         return localeTranslationMap.keySet();
     }

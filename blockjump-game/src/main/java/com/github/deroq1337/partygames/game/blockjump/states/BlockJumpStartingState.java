@@ -5,6 +5,7 @@ import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import com.github.deroq1337.partygames.game.base.countdowns.PartyGameStartingCountdown;
 import com.github.deroq1337.partygames.game.base.states.PartyGameStartingState;
+import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
 import com.github.deroq1337.partygames.game.blockjump.countdowns.BlockJumpStartingCountdown;
 
 import com.github.deroq1337.partygames.game.blockjump.map.BlockJumpMap;
@@ -16,8 +17,11 @@ import java.util.Optional;
 
 public class BlockJumpStartingState extends PartyGameStartingState<BlockJumpMap, BlockJumpUser> {
 
-    public BlockJumpStartingState(@NotNull PartyGame<BlockJumpMap, ? extends PartyGameConfig, BlockJumpUser> partyGame) {
+    private final @NotNull BlockJumpConfig config;
+
+    public BlockJumpStartingState(@NotNull PartyGame<BlockJumpMap, BlockJumpConfig, BlockJumpUser> partyGame) {
         super(partyGame);
+        this.config = partyGame.getGameConfig();
     }
 
     @Override
@@ -42,7 +46,7 @@ public class BlockJumpStartingState extends PartyGameStartingState<BlockJumpMap,
 
     @Override
     public Optional<GameState> getNextState() {
-        return Optional.of(new BlockJumpRunningState(partyGame));
+        return Optional.of(new BlockJumpRunningState(partyGame, config, partyGame.getMap()));
     }
 
     @Override

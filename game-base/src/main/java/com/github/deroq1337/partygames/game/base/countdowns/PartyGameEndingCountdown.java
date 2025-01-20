@@ -2,11 +2,8 @@ package com.github.deroq1337.partygames.game.base.countdowns;
 
 import com.github.bukkitnews.partygames.common.tasks.CountdownTask;
 import com.github.deroq1337.partygames.api.countdown.Countdown;
-import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.state.GameState;
 import com.github.deroq1337.partygames.game.base.PartyGameBase;
-import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
-import com.github.deroq1337.partygames.game.base.user.PartyGameUserBase;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -14,16 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class PartyGameStartingCountdown extends Countdown {
+public class PartyGameEndingCountdown extends Countdown {
 
-    private final @NotNull PartyGame<?, ?, ?> partyGame;
     private final @NotNull Plugin plugin;
 
     private Optional<BukkitTask> task = Optional.empty();
 
-    public PartyGameStartingCountdown(@NotNull PartyGame<?, ? extends PartyGameConfig, ? extends PartyGameUserBase> partyGame, @NotNull GameState gameState) {
-        super(gameState, partyGame.getGameConfig().getStartingTicks(), partyGame.getGameConfig().getStartingSpecialTicks());
-        this.partyGame = partyGame;
+    public PartyGameEndingCountdown(@NotNull GameState gameState) {
+        super(gameState, 5);
         this.plugin = PartyGameBase.getPlugin();
     }
 
@@ -45,7 +40,5 @@ public class PartyGameStartingCountdown extends Countdown {
 
     @Override
     public void onSpecialTick(int tick) {
-        String countdownMessage = "game_starting_countdown" + (tick == 1 ? "_one" : "");
-        partyGame.getUserRegistry().getUsers().forEach(user -> user.sendMessage(countdownMessage, tick));
     }
 }

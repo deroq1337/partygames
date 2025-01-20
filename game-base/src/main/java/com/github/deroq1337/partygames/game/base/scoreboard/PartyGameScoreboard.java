@@ -2,6 +2,9 @@ package com.github.deroq1337.partygames.game.base.scoreboard;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.scoreboard.GameScoreboard;
+import com.github.deroq1337.partygames.game.base.scoreboard.sorting.AscendingComparator;
+import com.github.deroq1337.partygames.game.base.scoreboard.sorting.DescendingComparator;
+import com.github.deroq1337.partygames.game.base.scoreboard.sorting.Sorting;
 import com.github.deroq1337.partygames.game.base.user.PartyGameUserBase;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -12,6 +15,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +24,17 @@ public abstract class PartyGameScoreboard<U extends PartyGameUserBase> implement
 
     protected final @NotNull PartyGame<?, ?, U> partyGame;
     private final int topUsersDisplayCount;
+    private final @NotNull Sorting sorting;
+    private final @NotNull Comparator<PartyGameUserBase> comparator;
 
     private Optional<BukkitTask> task = Optional.empty();
+
+    public PartyGameScoreboard(@NotNull PartyGame<?, ?, U> partyGame, int topUsersDisplayCount, @NotNull Sorting sorting) {
+        this.partyGame = partyGame;
+        this.topUsersDisplayCount = topUsersDisplayCount;
+        this.sorting = sorting;
+        this.comparator = getSortingComparator();
+    }
 
     @Override
     public void setScoreboard(@NotNull U user) {
@@ -33,8 +46,8 @@ public abstract class PartyGameScoreboard<U extends PartyGameUserBase> implement
 
                 List<U> sortedUsers = getSortedUsers();
                 int score = sortedUsers.size();
-                boolean isInTopFour = displayTopFour(user, sortedUsers, objective, score);
 
+                boolean isInTopFour = displayTopFour(user, sortedUsers, objective, score);
                 if (!isInTopFour) {
                     displayUsersAbove(user, sortedUsers, objective, score);
                     score--;
@@ -59,11 +72,23 @@ public abstract class PartyGameScoreboard<U extends PartyGameUserBase> implement
 
     }
 
-    public abstract @NotNull List<U> getSortedUsers();
+    private @NotNull List<U> getSortedUsers() {
+        return partyGame.getUsers().stream()
+                .sorted(comparator)
+                .toList();
+    }
 
-    public abstract int getUsersAbove(@NotNull U user, @NotNull List<U> sortedUsers);
+    public int getUsersAbove(@NotNull U user, @NotNull List<U> sortedUsers) {
+        return (int) sortedUsers.stream()
+                .filter(sortedUser -> comparator.compare(sortedUser, user) > 0)
+                .count();
+    }
 
-    public abstract int getUsersBelow(@NotNull U user, @NotNull List<U> sortedUsers);
+    public int getUsersBelow(@NotNull U user, @NotNull List<U> sortedUsers) {
+        return (int) sortedUsers.stream()
+                .filter(sortedUser -> comparator.compare(sortedUser, user) < 0)
+                .count();
+    }
 
     private boolean displayTopFour(@NotNull U user, @NotNull List<U> sortedUsers, @NotNull Objective objective, int score) {
         boolean isInTopFour = false;
@@ -100,5 +125,11 @@ public abstract class PartyGameScoreboard<U extends PartyGameUserBase> implement
         if (usersBelow > 0) {
             objective.getScore(user.getPartyGamesUser().getMessage("game_scoreboard_users_below", usersBelow)).setScore(score);
         }
+    }
+
+    private @NotNull Comparator<PartyGameUserBase> getSortingComparator() {
+        return sorting == Sorting.ASCENDING
+                ? new AscendingComparator()
+                : new DescendingComparator();
     }
 }

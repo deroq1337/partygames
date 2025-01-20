@@ -1,6 +1,9 @@
 package com.github.deroq1337.partygames.game.base;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
+import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
+import com.github.deroq1337.partygames.game.base.listeners.PlayerMoveListener;
+import com.github.deroq1337.partygames.game.base.listeners.PlayerQuitListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -19,6 +22,12 @@ public class PartyGameBase {
 
     static {
         PLUGIN_REFERENCE.set(Bukkit.getPluginManager().getPlugin("PartyGames"));
+    }
+
+    public static void init(@NotNull PartyGame<?, ? extends PartyGameConfig, ?> game) {
+        GAME_REFERENCE.set(Optional.of(game));
+        registerListener(new PlayerQuitListener(game));
+        registerListener(new PlayerMoveListener(game));
     }
 
     public static void setGame(Optional<PartyGame<?, ?, ?>> game) {

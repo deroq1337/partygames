@@ -6,7 +6,7 @@ import com.github.deroq1337.partygames.api.state.Countdownable;
 import com.github.deroq1337.partygames.api.state.PartyGameState;
 import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import com.github.deroq1337.partygames.game.base.countdowns.PartyGameStartingCountdown;
-import com.github.deroq1337.partygames.game.base.listeners.PlayerPreventMoveListener;
+import com.github.deroq1337.partygames.game.base.listeners.PlayerMoveListener;
 import com.github.deroq1337.partygames.game.base.user.PartyGameUserBase;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public abstract class PartyGameStartingState<M extends PartyGameMap, U extends P
         this.countdown = initCountdown();
 
         if (!partyGame.getGameConfig().isCanMoveWhileStarting()) {
-            new PlayerPreventMoveListener(partyGame);
+            new PlayerMoveListener(partyGame);
         }
     }
 
