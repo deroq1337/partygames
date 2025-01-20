@@ -1,6 +1,9 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceAnimation;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceDefaultAnimation;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceRotatingAnimation;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import com.github.deroq1337.partygames.core.data.game.utils.SkinTexture;
 import lombok.AccessLevel;
@@ -28,16 +31,16 @@ public class Dice {
     private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull DefaultPartyGamesUser user;
 
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(value = AccessLevel.PUBLIC)
     private final @NotNull DiceConfig config;
 
     private Optional<ArmorStand> armorStand = Optional.empty();
 
+    private DiceAnimation currentAnimation;
+
     @Getter
     @Setter
     private boolean rolled;
-
-    private int diceAnimationTaskId = -1;
 
     public Dice(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull DefaultPartyGamesUser user) {
         this.game = game;
@@ -85,25 +88,26 @@ public class Dice {
 
     public void startDiceAnimation(Player player) {
         armorStand.ifPresent(armorStand -> {
-            diceAnimationTaskId = Bukkit.getScheduler().runTaskTimer(game.getPartyGames(), () -> {
-                int randomNumber = ThreadLocalRandom.current().nextInt(1, 7);
-                Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
-                    Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                        setTexture(helmet, config.getTextures().get(randomNumber));
-                        equipment.setHelmet(helmet);
-                    });
-                });
+            if (currentAnimation != null) {
+                currentAnimation.cancel();
+            }
 
-                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1f);
+            if (config.isRollingDice()) {
+                currentAnimation = new DiceRotatingAnimation(this, player, armorStand);
+            } else {
+                currentAnimation = new DiceDefaultAnimation(this, player, armorStand);
+                currentAnimation.runTaskTimer(game.getPartyGames(), 0L, config.getAnimationSpeed());
+                return;
+            }
 
-            }, 0L, config.getAnimationSpeed()).getTaskId();
+            currentAnimation.runTaskTimer(game.getPartyGames(), 0L, 1L);
         });
     }
 
     public void stopDiceAnimation() {
-        if (diceAnimationTaskId != -1) {
-            Bukkit.getScheduler().cancelTask(diceAnimationTaskId);
-            diceAnimationTaskId = -1;
+        if (currentAnimation != null) {
+            currentAnimation.cancel();
+            currentAnimation = null;
         }
     }
 
@@ -140,7 +144,7 @@ public class Dice {
                 .forEach(player -> player.hideEntity(game.getPartyGames(), armorStand));
     }
 
-    protected void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
+    public void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
         armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
 
         if (!config.isRollingDice()) {
@@ -152,7 +156,7 @@ public class Dice {
         armorStand.setHeadPose(new EulerAngle(0, config.isRollingDice() ? 0 : Math.toRadians(0), 0));
     }
 
-    protected void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
+    public void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
         Location location = player.getLocation().add(
                 player.getLocation().getDirection().multiply(config.getViewDistanceOffset()));
         armorStand.teleport(location);
@@ -162,7 +166,7 @@ public class Dice {
         }
     }
 
-    private void setTexture(@NotNull ItemStack item, String texture) {
+    public void setTexture(@NotNull ItemStack item, String texture) {
         Optional.ofNullable((SkullMeta) item.getItemMeta()).ifPresent(skullMeta -> {
             SkinTexture.getUrlFromTexture(texture).ifPresent(url -> {
                 PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID(), UUID.randomUUID().toString().substring(0, 16));
