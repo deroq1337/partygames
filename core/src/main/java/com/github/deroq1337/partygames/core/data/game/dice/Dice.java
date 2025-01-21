@@ -46,7 +46,7 @@ public class Dice {
 
     public void init() {
         user.getBukkitPlayer().ifPresent(player ->
-                new DiceTask(game, this, player).runTaskLater(game.getPartyGames(), 5 * 20L));
+                new DiceTask(this, player).runTaskLater(game.getPartyGames(), 5 * 20L));
     }
 
     public void roll() {
@@ -72,7 +72,7 @@ public class Dice {
         });
     }
 
-    public void startDiceAnimation(Player player) {
+    public void startAnimation(Player player) {
         armorStand.ifPresent(armorStand -> {
             if (config.isRollingDice()) {
                 new DiceRotatingAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
