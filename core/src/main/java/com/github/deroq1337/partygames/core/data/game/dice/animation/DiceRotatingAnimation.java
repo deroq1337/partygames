@@ -1,6 +1,7 @@
 package com.github.deroq1337.partygames.core.data.game.dice.animation;
 
 import com.github.deroq1337.partygames.core.data.game.dice.Dice;
+import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
@@ -21,5 +22,9 @@ public class DiceRotatingAnimation extends DiceAnimation {
         armorStand.setHeadPose(new EulerAngle(xAngle, yAngle, 0));
 
         dice.teleportIntoView(player, armorStand);
+
+        if (ticks % 4 == 0) {
+            player.playSound(player.getLocation(), Sound.BLOCK_WOOD_STEP, 1f, 1f);
+        }
     }
 }

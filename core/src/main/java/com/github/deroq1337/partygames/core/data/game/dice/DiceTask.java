@@ -1,7 +1,6 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceAnimationTask;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.ArmorStand;
