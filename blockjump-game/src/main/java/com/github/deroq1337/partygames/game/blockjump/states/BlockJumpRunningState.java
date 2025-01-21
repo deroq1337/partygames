@@ -2,7 +2,6 @@ package com.github.deroq1337.partygames.game.blockjump.states;
 
 import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.game.PartyGame;
-import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import com.github.deroq1337.partygames.game.base.states.FinishablePartyGameRunningState;
 import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
 import com.github.deroq1337.partygames.game.blockjump.countdowns.BlockJumpRunningCountdown;
@@ -75,9 +74,8 @@ public class BlockJumpRunningState extends FinishablePartyGameRunningState<Block
     }
 
     public void onFail(@NotNull BlockJumpUser user) {
+        destroyBlocks(user);
         user.setValue(0);
-        user.setPreviousBlock(Optional.empty());
-        user.setCurrentBlock(Optional.empty());
     }
 
     public void setBlock(@NotNull BlockJumpUser user) {
