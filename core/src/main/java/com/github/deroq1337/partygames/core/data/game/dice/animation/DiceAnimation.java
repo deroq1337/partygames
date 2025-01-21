@@ -2,7 +2,6 @@ package com.github.deroq1337.partygames.core.data.game.dice.animation;
 
 import com.github.deroq1337.partygames.core.data.game.dice.Dice;
 import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
-import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

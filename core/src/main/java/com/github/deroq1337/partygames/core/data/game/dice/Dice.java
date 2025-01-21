@@ -9,14 +9,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -57,14 +58,14 @@ public class Dice {
 
         armorStand.ifPresent(armorStand -> {
             user.getBukkitPlayer().ifPresent(player -> {
-                fixAngle(armorStand);
                 teleportAboveHead(player, armorStand);
                 show(armorStand);
 
                 player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1f, 1f);
             });
 
-            int finalNumber = ThreadLocalRandom.current().nextInt(1, 7);
+            //int finalNumber = ThreadLocalRandom.current().nextInt(1, 7);
+            int finalNumber = 1;
             Optional.ofNullable(config.getTextures().get(finalNumber)).ifPresent(texture -> setTexture(armorStand, texture));
 
             user.sendMessage("dice_rolled", finalNumber);
@@ -78,7 +79,7 @@ public class Dice {
             if (config.isRollingDice()) {
                 new DiceRotatingAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
             } else {
-                new DiceDefaultAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, config.getAnimationSpeed());
+                new DiceDefaultAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, (long) config.getAnimationSpeed());
             }
         });
     }
@@ -88,6 +89,9 @@ public class Dice {
         armorStand.setGravity(false);
         armorStand.setVisible(false);
         armorStand.setMarker(true);
+
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        armorStand.getEquipment().setHelmet(head);
         setTexture(armorStand, game.getDiceConfig().getTexture());
 
         this.armorStand = Optional.of(armorStand);
@@ -115,14 +119,12 @@ public class Dice {
 
     public void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
         armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
-
-        if (!config.isRollingDice()) {
-            fixAngle(armorStand);
-        }
+        fixAngle(armorStand);
     }
 
     private void fixAngle(@NotNull ArmorStand armorStand) {
-        armorStand.setHeadPose(new EulerAngle(0, config.isRollingDice() ? 0 : Math.toRadians(0), 0));
+        double y = config.isRollingDice() ? 0 : Math.toRadians(0);
+        armorStand.setHeadPose(new EulerAngle(0, y, 0));
     }
 
     public void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {

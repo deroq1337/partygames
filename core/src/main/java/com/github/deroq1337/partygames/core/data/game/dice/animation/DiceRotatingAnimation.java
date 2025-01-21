@@ -17,8 +17,8 @@ public class DiceRotatingAnimation extends DiceAnimation {
 
     @Override
     public void animate() {
-        xAngle += config.getRotationSpeed();
-        yAngle += config.getRotationSpeed();
+        xAngle += config.getAnimationSpeed();
+        yAngle += config.getAnimationSpeed();
         armorStand.setHeadPose(new EulerAngle(xAngle, yAngle, 0));
 
         dice.teleportIntoView(player, armorStand);
