@@ -1,34 +1,33 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceDefaultAnimation;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceRotatingAnimation;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import com.github.deroq1337.partygames.core.data.game.utils.SkinTexture;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Dice {
 
     private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull DefaultPartyGamesUser user;
 
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter
     private final @NotNull DiceConfig config;
 
     private Optional<ArmorStand> armorStand = Optional.empty();
@@ -46,9 +45,8 @@ public class Dice {
     }
 
     public void init() {
-        user.getBukkitPlayer().ifPresent(player -> {
-            new DiceTask(game, this, player).runTaskLater(game.getPartyGames(), 5 * 20L);
-        });
+        user.getBukkitPlayer().ifPresent(player ->
+                new DiceTask(game, this, player).runTaskLater(game.getPartyGames(), 5 * 20L));
     }
 
     public void roll() {
@@ -57,17 +55,6 @@ public class Dice {
         }
 
         armorStand.ifPresent(armorStand -> {
-            // int numberOfEyes = ThreadLocalRandom.current().nextInt(1, 6);
-            int numberOfEyes = 1;
-            Optional.ofNullable(config.getTextures().get(numberOfEyes)).ifPresent(texture -> {
-                Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
-                    Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                        setTexture(helmet, texture);
-                        equipment.setHelmet(helmet);
-                    });
-                });
-            });
-
             user.getBukkitPlayer().ifPresent(player -> {
                 fixAngle(armorStand);
                 teleportAboveHead(player, armorStand);
@@ -76,9 +63,22 @@ public class Dice {
                 player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1f, 1f);
             });
 
-            user.sendMessage("dice_rolled", numberOfEyes);
-            user.goToField(numberOfEyes);
+            int finalNumber = ThreadLocalRandom.current().nextInt(1, 7);
+            Optional.ofNullable(config.getTextures().get(finalNumber)).ifPresent(texture -> setTexture(armorStand, texture));
+
+            user.sendMessage("dice_rolled", finalNumber);
+            user.goToField(finalNumber);
             this.rolled = true;
+        });
+    }
+
+    public void startDiceAnimation(Player player) {
+        armorStand.ifPresent(armorStand -> {
+            if (config.isRollingDice()) {
+                new DiceRotatingAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
+            } else {
+                new DiceDefaultAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, config.getAnimationSpeed());
+            }
         });
     }
 
@@ -87,11 +87,8 @@ public class Dice {
         armorStand.setGravity(false);
         armorStand.setVisible(false);
         armorStand.setMarker(true);
+        setTexture(armorStand, game.getDiceConfig().getTexture());
 
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        setTexture(head, game.getDiceConfig().getTexture());
-
-        armorStand.getEquipment().setHelmet(head);
         this.armorStand = Optional.of(armorStand);
         return armorStand;
     }
@@ -115,31 +112,43 @@ public class Dice {
                 .forEach(player -> player.hideEntity(game.getPartyGames(), armorStand));
     }
 
-    protected void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        Location location = player.getLocation();
-        Vector direction = location.getDirection();
-
-        Vector offset = direction.multiply(config.getViewDistanceOffset());
-        Location targetLocation = location.clone().add(offset);
-        armorStand.teleport(targetLocation);
-    }
-
-    protected void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
+    public void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
         armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
+
+        if (!config.isRollingDice()) {
+            fixAngle(armorStand);
+        }
     }
 
     private void fixAngle(@NotNull ArmorStand armorStand) {
-        armorStand.setHeadPose(new EulerAngle(0, 0, 0));
+        armorStand.setHeadPose(new EulerAngle(0, config.isRollingDice() ? 0 : Math.toRadians(0), 0));
     }
 
-    private void setTexture(@NotNull ItemStack item, String texture) {
-        Optional.ofNullable((SkullMeta) item.getItemMeta()).ifPresent(skullMeta -> {
-            SkinTexture.getUrlFromTexture(texture).ifPresent(url -> {
-                PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID(), UUID.randomUUID().toString().substring(0, 16));
-                playerProfile.getTextures().setSkin(url);
-                skullMeta.setOwnerProfile(playerProfile);
-                item.setItemMeta(skullMeta);
+    public void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
+        Location location = player.getLocation().add(
+                player.getLocation().getDirection().multiply(config.getViewDistanceOffset()));
+        armorStand.teleport(location);
+
+        if (!config.isRollingDice()) {
+            fixAngle(armorStand);
+        }
+    }
+
+    public void setTexture(@NotNull ArmorStand armorStand, @NotNull String texture) {
+        Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
+            Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
+                Optional.ofNullable((SkullMeta) helmet.getItemMeta()).ifPresent(skullMeta -> {
+                    SkinTexture.getUrlFromTexture(texture).ifPresent(url -> {
+                        PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID(), UUID.randomUUID().toString().substring(0, 16));
+                        playerProfile.getTextures().setSkin(url);
+                        skullMeta.setOwnerProfile(playerProfile);
+                        helmet.setItemMeta(skullMeta);
+
+                        equipment.setHelmet(helmet);
+                    });
+                });
             });
         });
+
     }
 }

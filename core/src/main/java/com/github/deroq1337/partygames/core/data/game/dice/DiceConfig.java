@@ -15,10 +15,12 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class DiceConfig extends YamlConfig {
 
-    private long rollTime = 8; // in seconds
+    private long rollTime = 10; // in seconds
     private double headHeightOffset = 1.5;
-    private double viewDistanceOffset = 3;
-    private double rotationSpeed = 0.3;
+    private double viewDistanceOffset = 2;
+    private double rotationSpeed = 0.5;
+    private long animationSpeed = 7;
+    private boolean rollingDice = true;
     private @NotNull String texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU5ODk5ZmI5ZTNhOTY0NDZlZGJjZjU5ZDJiNDM5OTNlOThjMWU5ZWM3ZDg3ZDE5M2RjMzBlNTVhNzhlOTQxZSJ9fX0=";
     private @NotNull Map<Integer, String> textures = new HashMap<>();
 

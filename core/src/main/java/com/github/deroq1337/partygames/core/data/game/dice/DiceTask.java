@@ -20,7 +20,12 @@ public class DiceTask extends BukkitRunnable {
         ArmorStand armorStand = dice.spawn(player.getLocation());
         dice.hide(armorStand);
 
+        if (!game.getDiceConfig().isRollingDice()) {
+            dice.startDiceAnimation(player);
+        }
+
         new DiceAnimationTask(dice, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
         cancel();
     }
+
 }
