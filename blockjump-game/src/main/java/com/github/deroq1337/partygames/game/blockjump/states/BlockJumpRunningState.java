@@ -1,9 +1,11 @@
 package com.github.deroq1337.partygames.game.blockjump.states;
 
+import com.github.deroq1337.partygames.api.countdown.Countdown;
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
-import com.github.deroq1337.partygames.game.base.states.FinishablePartyGameState;
+import com.github.deroq1337.partygames.game.base.states.FinishablePartyGameRunningState;
 import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
+import com.github.deroq1337.partygames.game.blockjump.countdowns.BlockJumpRunningCountdown;
 import com.github.deroq1337.partygames.game.blockjump.map.BlockJumpMap;
 import com.github.deroq1337.partygames.game.blockjump.user.BlockJumpUser;
 import org.bukkit.Location;
@@ -16,14 +18,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockJumpRunningState extends FinishablePartyGameState<BlockJumpUser> {
+public class BlockJumpRunningState extends FinishablePartyGameRunningState<BlockJumpUser> {
 
     private final @NotNull BlockJumpConfig config;
     private final @NotNull BlockJumpMap map;
 
-    public BlockJumpRunningState(@NotNull PartyGame<BlockJumpMap, ? extends PartyGameConfig, BlockJumpUser> partyGame, @NotNull BlockJumpConfig config, @NotNull BlockJumpMap map) {
+    public BlockJumpRunningState(@NotNull PartyGame<BlockJumpMap, BlockJumpConfig, BlockJumpUser> partyGame, @NotNull BlockJumpMap map) {
         super(partyGame);
-        this.config = config;
+        this.config = partyGame.getGameConfig();
         this.map = map;
     }
 
@@ -37,6 +39,11 @@ public class BlockJumpRunningState extends FinishablePartyGameState<BlockJumpUse
     public void leave() {
         super.leave();
         partyGame.getUsers().forEach(this::destroyBlocks);
+    }
+
+    @Override
+    public @NotNull Countdown initCountdown() {
+        return new BlockJumpRunningCountdown(partyGame, this);
     }
 
     @Override
@@ -127,6 +134,6 @@ public class BlockJumpRunningState extends FinishablePartyGameState<BlockJumpUse
 
     @Override
     public boolean isGoalReached(@NotNull BlockJumpUser user) {
-        return user.getValue() == map.getGoalBlocks();
+        return user.getValue() >= map.getGoalBlocks();
     }
 }

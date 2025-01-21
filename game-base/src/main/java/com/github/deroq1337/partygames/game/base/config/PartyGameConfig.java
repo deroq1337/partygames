@@ -15,10 +15,12 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public abstract class PartyGameConfig extends YamlConfig {
 
-    private int startingTicks = 10;
+    private int startDelay = 10;
     private @NotNull List<Integer> startingSpecialTicks = Arrays.asList(10, 5, 4, 3, 2, 1);
     private boolean canMoveWhileStarting = true;
     private int maxFinishers = 3;
+    private int gameDuration = 3 * 60;
+    private @NotNull List<Integer> specialTicks = Arrays.asList(90, 60, 30, 10, 5, 4, 3, 2, 1);
 
     public PartyGameConfig(@NotNull File file) {
         this.file = file;

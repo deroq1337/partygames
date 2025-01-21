@@ -23,6 +23,7 @@ public class PartyGameEndListener implements Listener {
             return;
         }
 
+        System.out.println("game end : " + event.getPlacements().toString());
         inGameState.onGameEnd();
     }
 }

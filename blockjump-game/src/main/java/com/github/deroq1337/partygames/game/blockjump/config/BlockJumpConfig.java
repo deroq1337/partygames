@@ -15,11 +15,19 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class BlockJumpConfig extends PartyGameConfig {
 
-    private List<List<Integer>> jumps = Arrays.asList(
+    private @NotNull List<List<Integer>> jumps = Arrays.asList(
+            Arrays.asList(4, 1, 0),
+            Arrays.asList(-4, 1, 0),
+            Arrays.asList(0, 1, 4),
+            Arrays.asList(0, 1, -4),
+            Arrays.asList(4, 0, 0),
+            Arrays.asList(-4, 0, 0),
+            Arrays.asList(0, 0, 4),
+            Arrays.asList(0, 0, -4),
             Arrays.asList(3, 1, 0),
             Arrays.asList(-3, 1, 0),
-            Arrays.asList(0, 1, 3),
-            Arrays.asList(0, 1, -3)
+            Arrays.asList(0, 1, -3),
+            Arrays.asList(0, 1, 3)
     );
 
     public BlockJumpConfig(@NotNull File file) {

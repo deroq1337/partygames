@@ -61,7 +61,6 @@
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <artifactSet>
                             </artifactSet>
-                            <minimizeJar>true</minimizeJar>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>

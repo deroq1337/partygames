@@ -3,7 +3,7 @@ package com.github.deroq1337.partygames.game.base.listeners;
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.game.base.PartyGameBase;
 import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
-import com.github.deroq1337.partygames.game.base.states.PartyGameStartingState;
+import com.github.deroq1337.partygames.game.base.states.AbstractPartyGameStartingState;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +23,7 @@ public class PlayerMoveListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (!(game.getCurrentState() instanceof PartyGameStartingState<?, ?>)) {
+        if (!(game.getCurrentState() instanceof AbstractPartyGameStartingState<?, ?>)) {
             return;
         }
 

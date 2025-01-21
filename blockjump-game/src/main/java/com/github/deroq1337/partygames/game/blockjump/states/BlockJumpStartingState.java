@@ -2,9 +2,8 @@ package com.github.deroq1337.partygames.game.blockjump.states;
 
 import com.github.deroq1337.partygames.api.game.PartyGame;
 import com.github.deroq1337.partygames.api.state.GameState;
-import com.github.deroq1337.partygames.game.base.config.PartyGameConfig;
 import com.github.deroq1337.partygames.game.base.countdowns.PartyGameStartingCountdown;
-import com.github.deroq1337.partygames.game.base.states.PartyGameStartingState;
+import com.github.deroq1337.partygames.game.base.states.AbstractPartyGameStartingState;
 import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
 import com.github.deroq1337.partygames.game.blockjump.countdowns.BlockJumpStartingCountdown;
 
@@ -15,13 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class BlockJumpStartingState extends PartyGameStartingState<BlockJumpMap, BlockJumpUser> {
-
-    private final @NotNull BlockJumpConfig config;
+public class BlockJumpStartingState extends AbstractPartyGameStartingState<BlockJumpMap, BlockJumpUser> {
 
     public BlockJumpStartingState(@NotNull PartyGame<BlockJumpMap, BlockJumpConfig, BlockJumpUser> partyGame) {
         super(partyGame);
-        this.config = partyGame.getGameConfig();
     }
 
     @Override
@@ -46,7 +42,7 @@ public class BlockJumpStartingState extends PartyGameStartingState<BlockJumpMap,
 
     @Override
     public Optional<GameState> getNextState() {
-        return Optional.of(new BlockJumpRunningState(partyGame, config, partyGame.getMap()));
+        return Optional.of(new BlockJumpRunningState((PartyGame<BlockJumpMap, BlockJumpConfig, BlockJumpUser>) partyGame, partyGame.getMap()));
     }
 
     @Override

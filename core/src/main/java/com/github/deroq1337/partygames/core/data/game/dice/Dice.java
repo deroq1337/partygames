@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -72,7 +73,7 @@ public class Dice {
         });
     }
 
-    public void startAnimation(Player player) {
+    public void startAnimation(@NotNull Player player) {
         armorStand.ifPresent(armorStand -> {
             if (config.isRollingDice()) {
                 new DiceRotatingAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
@@ -125,13 +126,9 @@ public class Dice {
     }
 
     public void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        Location location = player.getLocation().add(
-                player.getLocation().getDirection().multiply(config.getViewDistanceOffset()));
-        armorStand.teleport(location);
-
-        if (!config.isRollingDice()) {
-            fixAngle(armorStand);
-        }
+        Location playerLocation = player.getLocation();
+        Location targetLocation = playerLocation.clone().add(playerLocation.getDirection().multiply(config.getViewDistanceOffset()));
+        armorStand.teleport(targetLocation);
     }
 
     public void setTexture(@NotNull ArmorStand armorStand, @NotNull String texture) {

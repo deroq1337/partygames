@@ -14,10 +14,11 @@ import java.util.Optional;
 @Setter
 @ToString
 @EqualsAndHashCode
-public abstract class PartyGameUserBase implements PartyGameUser {
+public abstract class AbstractPartyGameUser implements PartyGameUser {
 
     private final @NotNull PartyGamesUser partyGamesUser;
     private int value;
+    private Optional<Integer> placement = Optional.empty();
 
     public Optional<Player> getBukkitPlayer() {
         return Optional.ofNullable(Bukkit.getPlayer(partyGamesUser.getUuid()));

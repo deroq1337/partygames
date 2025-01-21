@@ -6,6 +6,7 @@ import com.github.deroq1337.partygames.api.state.PartyGameState;
 import com.github.deroq1337.partygames.api.user.PartyGamesUser;
 import com.github.deroq1337.partygames.api.user.PartyGamesUserRegistry;
 import com.github.deroq1337.partygames.game.base.PartyGameBase;
+import com.github.deroq1337.partygames.game.base.scoreboard.sorting.AscendingComparator;
 import com.github.deroq1337.partygames.game.blockjump.config.BlockJumpConfig;
 import com.github.deroq1337.partygames.game.blockjump.listeners.PlayerMoveListener;
 import com.github.deroq1337.partygames.game.blockjump.map.BlockJumpMap;
@@ -18,6 +19,8 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -26,10 +29,12 @@ public class BlockJumpGame extends PartyGame<BlockJumpMap, BlockJumpConfig, Bloc
 
     private final @NotNull GameScoreboard<BlockJumpUser> scoreboard;
     private @NotNull PartyGameState currentState;
+    private @NotNull Comparator<BlockJumpUser> sortingComparator;
 
     public BlockJumpGame(@NotNull PartyGamesUserRegistry<? extends PartyGamesUser> userRegistry, @NotNull BlockJumpMap map, @NotNull File directory, @NotNull BlockJumpConfig gameConfig) {
         super(userRegistry, map, directory, gameConfig);
         this.scoreboard = new BlockJumpScoreboard(this);
+        this.sortingComparator = new AscendingComparator<>();
     }
 
     @Override
@@ -48,5 +53,12 @@ public class BlockJumpGame extends PartyGame<BlockJumpMap, BlockJumpConfig, Bloc
     public void onUnload() {
         PartyGameBase.unregisterListeners();
         PartyGameBase.setGame(Optional.empty());
+    }
+
+    @Override
+    public @NotNull List<BlockJumpUser> getSortedUsers() {
+        return getUsers().stream()
+                .sorted(getSortingComparator())
+                .toList();
     }
 }

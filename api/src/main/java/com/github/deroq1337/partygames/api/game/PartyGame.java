@@ -27,11 +27,15 @@ public abstract class PartyGame<M extends PartyGameMap, C extends YamlConfig, U 
 
     public abstract void onUnload();
 
+    public abstract @NotNull GameScoreboard<U> getScoreboard();
+
     public abstract @NotNull PartyGameState getCurrentState();
 
-    public abstract void setCurrentState(@NotNull PartyGameState state);
+    public abstract @NotNull List<U> getSortedUsers();
 
-    public abstract @NotNull GameScoreboard<U> getScoreboard();
+    public abstract @NotNull Comparator<U> getSortingComparator();
+
+    public abstract void setCurrentState(@NotNull PartyGameState state);
 
     public void addUser(@NotNull U user) {
         users.put(user.getPartyGamesUser().getUuid(), user);
