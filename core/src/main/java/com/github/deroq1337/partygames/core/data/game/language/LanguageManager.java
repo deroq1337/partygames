@@ -17,6 +17,7 @@ public class LanguageManager {
         if (!messagesFolder.exists()) {
             messagesFolder.mkdirs();
         }
+        
         loadMessages();
     }
 
