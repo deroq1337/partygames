@@ -17,6 +17,7 @@ import java.util.Optional;
 public abstract class AbstractPartyGameUser implements PartyGameUser {
 
     private final @NotNull PartyGamesUser partyGamesUser;
+    
     private int value;
     private Optional<Integer> placement = Optional.empty();
 
