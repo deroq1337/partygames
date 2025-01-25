@@ -30,7 +30,7 @@ public class DefaultPartyGamesUser implements PartyGamesUser {
     private @NotNull Locale locale = Locale.forLanguageTag("de-DE");
     private @NotNull Location lastLocation;
     private int currentField;
-    private Optional<Dice> dice;
+    private Optional<Dice> dice = Optional.empty();
     private boolean landed;
 
     public DefaultPartyGamesUser(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull UUID uuid, boolean alive) {
