@@ -1,4 +1,4 @@
-package com.github.deroq1337.partygames.core.data.game.dice;
+package com.github.deroq1337.partygames.core.data.game.dice.config;
 
 import com.github.deroq1337.partygames.api.config.YamlConfig;
 import lombok.*;
@@ -15,16 +15,22 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class DiceConfig extends YamlConfig {
 
-    private long rollTime = 10;
+    private long rollTime = 8;
     private double headHeightOffset = 1.5;
+    private double extraDiceHeadHeightOffset = 3;
     private double viewDistanceOffset = 3;
     private double animationSpeed = 0.3;
-    private boolean rollingDice = true;
+    private boolean rotatingDice = true;
+    private @NotNull Map<Integer, ExtraDiceSettings> extraDices = new HashMap<>();
     private @NotNull String texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU5ODk5ZmI5ZTNhOTY0NDZlZGJjZjU5ZDJiNDM5OTNlOThjMWU5ZWM3ZDg3ZDE5M2RjMzBlNTVhNzhlOTQxZSJ9fX0=";
     private @NotNull Map<Integer, String> textures = new HashMap<>();
 
     public DiceConfig(@NotNull File file) {
         super(file);
+
+        extraDices.put(1, new ExtraDiceSettings(4, 6));
+        extraDices.put(2, new ExtraDiceSettings(3, 5));
+        extraDices.put(3, new ExtraDiceSettings(1, 3));
 
         textures.put(1, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3R" +
                 "leHR1cmUvNzMwZDBkNGQwZTM3OTc0MzhjYzM3M2JiNTY0YzNjN2I1ZTg0M2IzNjRkZTUyYzhhZGU2MWQ2NWIxOTk2MWM2In19fQ==");

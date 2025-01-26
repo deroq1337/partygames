@@ -12,7 +12,7 @@ import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesPauseCo
 import com.github.deroq1337.partygames.core.data.game.commands.PartyGamesStartCommand;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardCommand;
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
-import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
+import com.github.deroq1337.partygames.core.data.game.dice.config.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.LanguageManager;
 import com.github.deroq1337.partygames.core.data.game.listeners.*;
 import com.github.deroq1337.partygames.core.data.game.map.DefaultPartyGameMapManager;
@@ -44,7 +44,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUs
     private final @NotNull Map<Class<? extends PartyGameMap>, PartyGameMapManager> gameMapManagerMap = new HashMap<>();
 
     private @NotNull PartyGamesState currentState;
-    private Optional<PartyGamesBoard> board = Optional.empty();
+    private Optional<PartyGamesBoard> board;
     private boolean forceMapped;
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
@@ -64,6 +64,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUs
         new PlayerInteractListener(this);
         new EntityDamageListener(this);
         new PartyGameEndListener(this);
+        new UserRollDiceListener(this);
 
         new PartyGamesForceMapCommand(this);
         new PartyGamesStartCommand(this);

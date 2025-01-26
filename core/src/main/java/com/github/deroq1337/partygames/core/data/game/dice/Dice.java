@@ -1,54 +1,62 @@
 package com.github.deroq1337.partygames.core.data.game.dice;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
+import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceAnimation;
 import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceDefaultAnimation;
 import com.github.deroq1337.partygames.core.data.game.dice.animation.DiceRotatingAnimation;
+import com.github.deroq1337.partygames.core.data.game.dice.config.DiceConfig;
+import com.github.deroq1337.partygames.core.data.game.events.UserRollDiceEvent;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
-import com.github.deroq1337.partygames.core.data.game.utils.SkinTexture;
+import com.github.deroq1337.partygames.core.data.game.utils.DiceArmorStandUtils;
+import com.github.deroq1337.partygames.core.data.game.utils.DiceTextureUtils;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class Dice {
 
     private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull DefaultPartyGamesUser user;
-
-    @Getter
     private final @NotNull DiceConfig config;
+    private final int min;
+    private final int max;
+    private final double headHeightOffset;
 
     private Optional<ArmorStand> armorStand = Optional.empty();
-
-    @Getter
-    @Setter
+    private boolean rolling;
     private boolean rolled;
 
-    public Dice(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull DefaultPartyGamesUser user) {
+    public Dice(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull DefaultPartyGamesUser user, int min, int max, double headHeightOffset) {
         this.game = game;
         this.user = user;
         this.config = game.getDiceConfig();
-
-        init();
+        this.min = min;
+        this.max = max;
+        this.headHeightOffset = headHeightOffset;
     }
 
-    public void init() {
-        user.getBukkitPlayer().ifPresent(player ->
-                new DiceTask(this, player).runTaskLater(game.getPartyGames(), 5 * 20L));
+    public void initiateRoll() {
+        this.rolling = true;
+        user.getBukkitPlayer().ifPresent(player -> new DiceTask(game, this, player).start());
+    }
+
+    protected void spawn(@NotNull Player player) {
+        ArmorStand armorStand = DiceArmorStandUtils.spawnArmorStand(player.getLocation(), config.getTexture());
+        DiceArmorStandUtils.hideArmorStand(game, armorStand, player);
+        this.armorStand = Optional.of(armorStand);
     }
 
     public void roll() {
@@ -56,98 +64,46 @@ public class Dice {
             return;
         }
 
+        int numberOfEyes = ThreadLocalRandom.current().nextInt(min, max);
+        user.setCurrentField(user.getCurrentField() + numberOfEyes);
+        user.sendMessage("dice_rolled", numberOfEyes);
+
         armorStand.ifPresent(armorStand -> {
+            DiceTextureUtils.applyTextureToArmorStand(armorStand, config.getTextures().get(numberOfEyes));
+
             user.getBukkitPlayer().ifPresent(player -> {
-                teleportAboveHead(player, armorStand);
-                show(armorStand);
+                DiceArmorStandUtils.teleportAboveHead(player, armorStand, config.getHeadHeightOffset());
+                DiceArmorStandUtils.showArmorStand(game, armorStand);
 
                 player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BREAK, 1f, 1f);
             });
-
-            //int finalNumber = ThreadLocalRandom.current().nextInt(1, 7);
-            int finalNumber = 1;
-            Optional.ofNullable(config.getTextures().get(finalNumber)).ifPresent(texture -> setTexture(armorStand, texture));
-
-            user.sendMessage("dice_rolled", finalNumber);
-            user.goToField(finalNumber);
-            this.rolled = true;
         });
-    }
 
-    public void startAnimation(@NotNull Player player) {
-        armorStand.ifPresent(armorStand -> {
-            if (config.isRollingDice()) {
-                new DiceRotatingAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, 1L);
-            } else {
-                new DiceDefaultAnimation(this, player, armorStand).runTaskTimer(game.getPartyGames(), 0L, (long) config.getAnimationSpeed());
-            }
-        });
-    }
+        this.rolling = false;
+        this.rolled = true;
 
-    protected @NotNull ArmorStand spawn(@NotNull Location location) {
-        ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-        armorStand.setGravity(false);
-        armorStand.setVisible(false);
-        armorStand.setMarker(true);
-
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        armorStand.getEquipment().setHelmet(head);
-        setTexture(armorStand, game.getDiceConfig().getTexture());
-
-        this.armorStand = Optional.of(armorStand);
-        return armorStand;
+        Bukkit.getPluginManager().callEvent(new UserRollDiceEvent(user, this));
     }
 
     public void destroy() {
-        armorStand.ifPresent(armorStand -> {
-            armorStand.setHealth(0);
-            armorStand.remove();
-            user.setDice(Optional.empty());
-        });
+        DiceArmorStandUtils.destroyArmorStand(armorStand);
         this.armorStand = Optional.empty();
     }
 
-    private void show(@NotNull ArmorStand armorStand) {
-        Bukkit.getOnlinePlayers().forEach(player -> player.showEntity(game.getPartyGames(), armorStand));
-    }
-
-    protected void hide(@NotNull ArmorStand armorStand) {
-        Bukkit.getOnlinePlayers().stream()
-                .filter(player -> !player.getUniqueId().equals(user.getUuid()))
-                .forEach(player -> player.hideEntity(game.getPartyGames(), armorStand));
-    }
-
-    public void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        armorStand.teleport(player.getLocation().clone().add(0, config.getHeadHeightOffset(), 0));
-        fixAngle(armorStand);
-    }
-
-    private void fixAngle(@NotNull ArmorStand armorStand) {
-        double y = config.isRollingDice() ? 0 : Math.toRadians(0);
-        armorStand.setHeadPose(new EulerAngle(0, y, 0));
-    }
-
-    public void teleportIntoView(@NotNull Player player, @NotNull ArmorStand armorStand) {
-        Location playerLocation = player.getLocation();
-        Location targetLocation = playerLocation.clone().add(playerLocation.getDirection().multiply(config.getViewDistanceOffset()));
-        armorStand.teleport(targetLocation);
-    }
-
-    public void setTexture(@NotNull ArmorStand armorStand, @NotNull String texture) {
-        Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
-            Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
-                Optional.ofNullable((SkullMeta) helmet.getItemMeta()).ifPresent(skullMeta -> {
-                    SkinTexture.getUrlFromTexture(texture).ifPresent(url -> {
-                        PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID(), UUID.randomUUID().toString().substring(0, 16));
-                        playerProfile.getTextures().setSkin(url);
-                        skullMeta.setOwnerProfile(playerProfile);
-                        helmet.setItemMeta(skullMeta);
-
-                        equipment.setHelmet(helmet);
-                    });
-                });
-            });
+    protected void startAnimation(@NotNull Player player) {
+        armorStand.ifPresent(armorStand -> {
+            DiceAnimation animation = config.isRotatingDice()
+                    ? new DiceRotatingAnimation(game, this, player, armorStand)
+                    : new DiceDefaultAnimation(game, this, config, player, armorStand);
+            animation.start();
         });
+    }
 
+    public void teleportAboveHead(@NotNull Player player) {
+        armorStand.ifPresent(armorStand -> DiceArmorStandUtils.teleportAboveHead(player, armorStand, headHeightOffset));
+    }
+
+    public void teleportIntoView(@NotNull Player player) {
+        armorStand.ifPresent(armorStand -> DiceArmorStandUtils.teleportIntoView(player, armorStand, config.getViewDistanceOffset()));
     }
 }

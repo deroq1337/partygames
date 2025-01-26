@@ -8,7 +8,7 @@ import com.github.deroq1337.partygames.core.PartyGames;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoardManager;
 import com.github.deroq1337.partygames.core.data.game.config.MainConfig;
-import com.github.deroq1337.partygames.core.data.game.dice.DiceConfig;
+import com.github.deroq1337.partygames.core.data.game.dice.config.DiceConfig;
 import com.github.deroq1337.partygames.core.data.game.language.LanguageManager;
 import com.github.deroq1337.partygames.core.data.game.map.PartyGameMapManager;
 import com.github.deroq1337.partygames.core.data.game.provider.PartyGameProvider;

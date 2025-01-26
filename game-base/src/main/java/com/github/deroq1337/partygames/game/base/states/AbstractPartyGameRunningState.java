@@ -33,20 +33,20 @@ public abstract class AbstractPartyGameRunningState<U extends AbstractPartyGameU
 
         partyGame.setCurrentState(this);
         partyGame.getUsers().forEach(user ->
-                user.getBukkitPlayer().ifPresent(player ->
-                        player.playSound(player.getLocation(), Sound.EVENT_RAID_HORN, 1f, 1f)));
+                user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.EVENT_RAID_HORN, 1f, 1f)));
     }
 
     @Override
     public void leave() {
         partyGame.getUsers().forEach(user -> {
             user.getPartyGamesUser().sendTitle("game_over_title");
-
-            user.getBukkitPlayer().ifPresent(player ->
-                    player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f));
+            user.getBukkitPlayer().ifPresent(player -> player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f));
         });
 
-        determinePlacements();
+        if (!(this instanceof FinishablePartyGameRunningState)) {
+            determinePlacements();
+        }
+
         getNextState().ifPresent(GameState::enter);
     }
 

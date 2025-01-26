@@ -31,10 +31,17 @@ public class PlayerInteractListener implements Listener {
                     return;
                 }
 
-                if (user.getDice().isPresent()) {
-                    user.getDice().get().roll();
-                    return;
-                }
+                user.getExtraDice().ifPresent(extraDice -> {
+                    if (extraDice.isRolling() && !extraDice.isRolled()) {
+                        extraDice.roll();
+                    }
+                });
+
+                user.getDice().ifPresent(dice -> {
+                    if (dice.isRolling() && !dice.isRolled()) {
+                        dice.roll();
+                    }
+                });
             }
         });
     }
