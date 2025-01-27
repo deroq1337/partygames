@@ -31,6 +31,7 @@ public class DiceArmorStandUtils {
 
     public static void teleportAboveHead(@NotNull Player player, @NotNull ArmorStand armorStand, double offset) {
         armorStand.teleport(player.getLocation().clone().add(0, offset, 0));
+        fixAngle(armorStand);
     }
 
     public static void showArmorStand(@NotNull PartyGamesGame<DefaultPartyGamesUser> game, @NotNull ArmorStand armorStand) {
