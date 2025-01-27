@@ -12,12 +12,15 @@ import java.util.UUID;
 public class DiceTextureUtils {
 
     public static void applyTextureToArmorStand(@NotNull ArmorStand armorStand, @NotNull String texture) {
-        Optional.ofNullable(armorStand.getEquipment())
-                .flatMap(equipment -> Optional.ofNullable(equipment.getHelmet()))
-                .ifPresent(helmet -> Optional.ofNullable((SkullMeta) helmet.getItemMeta()).ifPresent(skullMeta -> {
+        Optional.ofNullable(armorStand.getEquipment()).ifPresent(equipment -> {
+            Optional.ofNullable(equipment.getHelmet()).ifPresent(helmet -> {
+                Optional.ofNullable((SkullMeta) helmet.getItemMeta()).ifPresent(skullMeta -> {
                     applyTexture(skullMeta, texture);
                     helmet.setItemMeta(skullMeta);
-                }));
+                    equipment.setHelmet(helmet);
+                });
+            });
+        });
     }
 
     private static void applyTexture(@NotNull SkullMeta skullMeta, @NotNull String texture) {
