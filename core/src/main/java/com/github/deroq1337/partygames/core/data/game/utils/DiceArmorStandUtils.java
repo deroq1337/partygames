@@ -4,9 +4,11 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +21,9 @@ public class DiceArmorStandUtils {
         armorStand.setGravity(false);
         armorStand.setVisible(false);
         armorStand.setMarker(true);
+
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        armorStand.getEquipment().setHelmet(head);
         DiceTextureUtils.applyTextureToArmorStand(armorStand, texture);
 
         return armorStand;

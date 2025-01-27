@@ -60,10 +60,8 @@ public class DefaultPartyGamesUser implements PartyGamesUser {
     public void jumpToField() {
         this.landed = false;
 
-        getBukkitPlayer().ifPresent(player -> game.getBoard().flatMap(board -> board.getField(currentField)).ifPresent(field -> {
-            Location fieldLocation = field.getLocation().toBukkitLocation();
-            new FieldJumpTask(game, this, player, fieldLocation).start();
-        }));
+        getBukkitPlayer().ifPresent(player -> game.getBoard().flatMap(board -> board.getField(currentField)).ifPresent(field ->
+                new FieldJumpTask(game, this, player, field).start()));
     }
 
     public int getFieldRanking() {
@@ -73,7 +71,7 @@ public class DefaultPartyGamesUser implements PartyGamesUser {
     }
 
     public void initDices() {
-        this.dice = Optional.of(new Dice(game, this, 1, 3, game.getDiceConfig().getHeadHeightOffset()));
+        this.dice = Optional.of(new Dice(game, this, 1, 2, game.getDiceConfig().getHeadHeightOffset()));
 
         if (!placements.isEmpty()) {
             initExtraDice();

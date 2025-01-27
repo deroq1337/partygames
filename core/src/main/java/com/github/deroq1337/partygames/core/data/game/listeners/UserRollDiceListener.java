@@ -22,7 +22,7 @@ public class UserRollDiceListener implements Listener {
                 return;
             }
 
-            user.goToField();
-        }, user::goToField);
+            user.jumpToField();
+        }, user::jumpToField);
     }
 }

@@ -14,8 +14,10 @@ public class DiceTextureUtils {
     public static void applyTextureToArmorStand(@NotNull ArmorStand armorStand, @NotNull String texture) {
         Optional.ofNullable(armorStand.getEquipment())
                 .flatMap(equipment -> Optional.ofNullable(equipment.getHelmet()))
-                .flatMap(helmet -> Optional.ofNullable((SkullMeta) helmet.getItemMeta()))
-                .ifPresent(skullMeta -> applyTexture(skullMeta, texture));
+                .ifPresent(helmet -> Optional.ofNullable((SkullMeta) helmet.getItemMeta()).ifPresent(skullMeta -> {
+                    applyTexture(skullMeta, texture);
+                    helmet.setItemMeta(skullMeta);
+                }));
     }
 
     private static void applyTexture(@NotNull SkullMeta skullMeta, @NotNull String texture) {
