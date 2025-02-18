@@ -86,7 +86,7 @@ public class PartyGameProvider {
                 try {
                     PartyGame<?, ?, ?> gameInstance = (PartyGame<?, ?, ?>) mainClass
                             .getDeclaredConstructor(PartyGamesUserRegistry.class, mapClass, File.class, configClass)
-                            .newInstance(game.getUserRegistry(), gameMap.get(), gameDirectory, instantiateGameConfig(configClass, gameDirectory));
+                            .newInstance(game.getUserRegistry(), gameMap, gameDirectory, instantiateGameConfig(configClass, gameDirectory));
 
                     System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
                     return Optional.of(gameInstance);
@@ -95,9 +95,6 @@ public class PartyGameProvider {
                     System.err.println("Error while loading the game: " + e.getMessage());
                     return Optional.empty();
                 }
-            }).orElseGet(() -> {
-                System.err.println("Game '" + gameName + "' has no game maps");
-                return null;
             });
         });
     }
