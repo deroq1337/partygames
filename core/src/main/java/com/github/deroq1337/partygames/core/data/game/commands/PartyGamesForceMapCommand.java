@@ -27,50 +27,43 @@ public class PartyGamesForceMapCommand implements CommandExecutor {
             return true;
         }
 
-        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
-        if (optionalUser.isEmpty()) {
-            player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
-            return true;
-        }
+        game.getUserRegistry().getUser(player.getUniqueId()).ifPresentOrElse(user -> {
+            if (!player.hasPermission("partygames.forcemap")) {
+                user.sendMessage("no_permission");
+                return;
+            }
 
-        DefaultPartyGamesUser user = optionalUser.get();
-        if (!player.hasPermission("partygames.forcemap")) {
-            user.sendMessage("no_permission");
-            return true;
-        }
+            if (args.length < 1) {
+                user.sendMessage("command_forcemap_syntax");
+                return;
+            }
 
-        if (args.length < 1) {
-            user.sendMessage("command_forcemap_syntax");
-            return true;
-        }
+            if (!(game.getCurrentState() instanceof PartyGamesLobbyState)) {
+                user.sendMessage("game_already_started");
+                return;
+            }
 
-        if (!(game.getCurrentState() instanceof PartyGamesLobbyState)) {
-            user.sendMessage("game_already_started");
-            return true;
-        }
+            if (game.isForceMapped()) {
+                user.sendMessage("already_forcemapped");
+                return;
+            }
 
-        if (game.isForceMapped()) {
-            user.sendMessage("already_forcemapped");
-            return true;
-        }
+            String boardName = args[0];
+            if (game.getBoard().isPresent() && game.getBoard().get().getName().equals(boardName)) {
+                user.sendMessage("already_forcemapped");
+                return;
+            }
 
-        String boardName = args[0];
-        if (game.getBoard().isPresent() && game.getBoard().get().getName().equals(boardName)) {
-            user.sendMessage("already_forcemapped");
-            return true;
-        }
-
-        game.getBoardManager().getBoardByName(boardName).thenAccept(board -> {
-            Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
-                if (board.isEmpty()) {
-                    user.sendMessage("command_board_not_found");
-                    return;
-                }
-
-                game.forceMap(board.get());
-                user.sendMessage("game_force_mapped");
+            game.getBoardManager().getBoardByName(boardName).thenAccept(optionalBoard -> {
+                Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
+                    optionalBoard.ifPresentOrElse(board -> {
+                        game.forceMap(board);
+                        user.sendMessage("game_force_mapped");
+                    }, () -> user.sendMessage("command_board_not_found"));
+                });
             });
-        });
+        }, () -> player.sendMessage("§cAn error occurred. Rejoin or contact an administrator."));
+
         return true;
     }
 }

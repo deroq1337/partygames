@@ -34,6 +34,12 @@ import java.util.Optional;
 @Setter
 public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUser> {
 
+    private static final String MAIN_CONFIG_PATH = "plugins/partygames/configs/config.yml";
+    private static final String DICE_CONFIG_PATH = "plugins/partygames/configs/dice.yml";
+    private static final String GAMES_DIRECTORY = "plugins/partygames/games/";
+    private static final String LOCALES_DIRECTORY = "plugins/partygames/locales/";
+    private static final String BOARDS_DIRECTORY = "plugins/partygames/boards/";
+
     private final @NotNull PartyGames partyGames;
     private final @NotNull MainConfig mainConfig;
     private final @NotNull DiceConfig diceConfig;
@@ -41,6 +47,7 @@ public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUs
     private final @NotNull PartyGameProvider gameProvider;
     private final @NotNull LanguageManager languageManager;
     private final @NotNull PartyGamesBoardManager boardManager;
+
     private final @NotNull Map<Class<? extends PartyGameMap>, PartyGameMapManager> gameMapManagerMap = new HashMap<>();
 
     private @NotNull PartyGamesState currentState;
@@ -49,12 +56,12 @@ public class DefaultPartyGamesGame implements PartyGamesGame<DefaultPartyGamesUs
 
     public DefaultPartyGamesGame(@NotNull PartyGames partyGames) {
         this.partyGames = partyGames;
-        this.mainConfig = new MainConfig(new File("plugins/partygames/configs/config.yml")).load(MainConfig.class);
-        this.diceConfig = new DiceConfig(new File("plugins/partygames/configs/dice.yml")).load(DiceConfig.class);
+        this.mainConfig = new MainConfig(new File(MAIN_CONFIG_PATH)).load(MainConfig.class);
+        this.diceConfig = new DiceConfig(new File(DICE_CONFIG_PATH)).load(DiceConfig.class);
         this.userRegistry = new DefaultPartyGamesUserRegistry(this);
-        this.gameProvider = new PartyGameProvider(this, new File("plugins/partygames/games/"));
-        this.languageManager = new LanguageManager(new File("plugins/partygames/locales/"));
-        this.boardManager = new DefaultPartyGamesBoardManager(new File("plugins/partygames/boards/"));
+        this.gameProvider = new PartyGameProvider(this, new File(GAMES_DIRECTORY));
+        this.languageManager = new LanguageManager(new File(LOCALES_DIRECTORY));
+        this.boardManager = new DefaultPartyGamesBoardManager(new File(BOARDS_DIRECTORY));
 
         this.currentState = new PartyGamesLobbyState(this);
         this.board = boardManager.getRandomBoard().join();

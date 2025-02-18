@@ -39,15 +39,10 @@ public class PartyGameProvider {
     }
 
     private void findGame(@NotNull File file) {
-        Optional<PartyGameManifest> optionalManifest = getGameManifest(file);
-        if (optionalManifest.isEmpty()) {
-            System.err.println("File '" + file.getName() + "' does not have game manifest");
-            return;
-        }
-
-        PartyGameManifest manifest = optionalManifest.get();
-        foundGames.put(manifest, file);
-        System.out.println("Found game '" + manifest.getName() + "' by " + manifest.getAuthor().orElse(null));
+        getGameManifest(file).ifPresentOrElse(gameManifest -> {
+            foundGames.put(gameManifest, file);
+            System.out.println("Found game '" + gameManifest.getName() + "' by " + gameManifest.getAuthor().orElse(null));
+        }, () ->  System.err.println("File '" + file.getName() + "' does not have game manifest"));
     }
 
     public Optional<PartyGame<?, ?, ?>> loadGame(@NotNull PartyGameManifest manifest) {
@@ -86,24 +81,24 @@ public class PartyGameProvider {
         Class<? extends YamlConfig> configClass = getConfigClass(mainClass);
         File gameDirectory = manifest.getDirectory(gamesDirectory);
 
-        return game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenApply(gameMap -> {
-            if (gameMap.isEmpty()) {
+        return game.getGameMapManager(mapClass, gameDirectory).getRandomMap().thenApply(optionalGameMap -> {
+            return optionalGameMap.flatMap(gameMap -> {
+                try {
+                    PartyGame<?, ?, ?> gameInstance = (PartyGame<?, ?, ?>) mainClass
+                            .getDeclaredConstructor(PartyGamesUserRegistry.class, mapClass, File.class, configClass)
+                            .newInstance(game.getUserRegistry(), gameMap.get(), gameDirectory, instantiateGameConfig(configClass, gameDirectory));
+
+                    System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
+                    return Optional.of(gameInstance);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("Error while loading the game: " + e.getMessage());
+                    return Optional.empty();
+                }
+            }).orElseGet(() -> {
                 System.err.println("Game '" + gameName + "' has no game maps");
-                return Optional.empty();
-            }
-
-            try {
-                PartyGame<?, ?, ?> gameInstance = (PartyGame<?, ?, ?>) mainClass
-                        .getDeclaredConstructor(PartyGamesUserRegistry.class, mapClass, File.class, configClass)
-                        .newInstance(game.getUserRegistry(), gameMap.get(), gameDirectory, instantiateGameConfig(configClass, gameDirectory));
-
-                System.out.println("Instantiated game '" + gameName + "' by " + manifest.getAuthor().orElse(null));
-                return Optional.of(gameInstance);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Error while loading the game: " + e.getMessage());
-                return Optional.empty();
-            }
+                return null;
+            });
         });
     }
 

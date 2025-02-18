@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
+public class PartyGamesBoardCommand implements CommandExecutor {
 
     private final @NotNull PartyGamesGame<DefaultPartyGamesUser> game;
     private final @NotNull Map<String, PartyGamesBoardSubCommand> subCommandMap;
@@ -39,41 +39,31 @@ public class PartyGamesBoardCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
-        if (optionalUser.isEmpty()) {
-            player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
-            return true;
-        }
+        game.getUserRegistry().getUser(player.getUniqueId()).ifPresentOrElse(user -> {
+            if (!player.hasPermission("partygames.board")) {
+                user.sendMessage("no_permission");
+                return;
+            }
 
-        DefaultPartyGamesUser user = optionalUser.get();
-        if (!player.hasPermission("partygames.board")) {
-            user.sendMessage("no_permission");
-            return true;
-        }
+            if (args.length < 1) {
+                user.sendMessage("command_not_found");
+                return;
+            }
 
-        if (args.length < 1) {
-            user.sendMessage("command_not_found");
-            return true;
-        }
+            String subCommandName = args[0].toLowerCase();
+            Optional.ofNullable(subCommandMap.get(subCommandName)).ifPresentOrElse(
+                    subCommand -> subCommand.execute(user, player, buildSubCommandArgs(args)),
+                    () -> user.sendMessage("command_not_found")
+            );
+        }, () -> player.sendMessage("§cAn error occurred. Rejoin or contact an administrator."));
 
-        String subCommandName = args[0].toLowerCase();
-        Optional<PartyGamesBoardSubCommand> subCommand = Optional.ofNullable(subCommandMap.get(subCommandName));
-        if (subCommand.isEmpty()) {
-            user.sendMessage("command_not_found");
-            return true;
-        }
 
-        String[] subCommandArgs = Arrays.stream(args).skip(1).toArray(String[]::new);
-        subCommand.get().execute(user, player, subCommandArgs);
         return true;
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (args.length == 1) {
-            return new ArrayList<>(subCommandMap.keySet());
-        }
-
-        return null;
+    private @NotNull String[] buildSubCommandArgs(@NotNull String[] args) {
+        return Arrays.stream(args)
+                .skip(1)
+                .toArray(String[]::new);
     }
 }

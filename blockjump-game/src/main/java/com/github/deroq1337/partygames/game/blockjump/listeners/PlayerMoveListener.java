@@ -35,16 +35,7 @@ public class PlayerMoveListener implements Listener {
                 return;
             }
 
-            if (user.getCurrentBlock().isEmpty()) {
-                Optional.ofNullable(partyGame.getMap().getSpawnLocation()).ifPresent(spawnLocation -> {
-                    if (player.getLocation().getY() == partyGame.getMap().getSpawnLocation().getY()) {
-                        state.setBlock(user);
-                    }
-                });
-                return;
-            }
-
-            user.getCurrentBlock().ifPresent(currentBlock -> {
+            user.getCurrentBlock().ifPresentOrElse(currentBlock -> {
                 Optional.ofNullable(event.getTo()).ifPresent(to -> {
                     if (didUserFallDown(user, to.getY())) {
                         state.onFail(user);
@@ -55,7 +46,11 @@ public class PlayerMoveListener implements Listener {
                         state.onJump(user);
                     }
                 });
-            });
+            }, () -> Optional.ofNullable(partyGame.getMap().getSpawnLocation()).ifPresent(spawnLocation -> {
+                if (player.getLocation().getY() == partyGame.getMap().getSpawnLocation().getY()) {
+                    state.setBlock(user);
+                }
+            }));
         });
     }
 

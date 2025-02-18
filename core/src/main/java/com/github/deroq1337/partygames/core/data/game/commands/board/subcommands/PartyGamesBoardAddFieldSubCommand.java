@@ -1,13 +1,14 @@
 package com.github.deroq1337.partygames.core.data.game.commands.board.subcommands;
 
 import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
-import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardSubCommand;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class PartyGamesBoardAddFieldSubCommand extends PartyGamesBoardSubCommand {
 
@@ -23,19 +24,26 @@ public class PartyGamesBoardAddFieldSubCommand extends PartyGamesBoardSubCommand
         }
 
         String boardName = args[0];
-        Optional<PartyGamesBoard> optionalBoard = boardManager.getBoardByName(boardName).join();
-        if (optionalBoard.isEmpty()) {
-            user.sendMessage("command_board_not_found");
-            return;
-        }
+        Location playerLocation = player.getLocation();
 
-        PartyGamesBoard board = optionalBoard.get();
-        int id = board.addField(player.getLocation(), Boolean.parseBoolean(args[1]));
-        if (!boardManager.saveBoard(board).join()) {
-            user.sendMessage("command_board_not_updated");
-            return;
-        }
+        boardManager.getBoardByName(boardName).thenCompose(optionalBoard -> {
+            return optionalBoard.map(board -> {
+                int id = board.addField(playerLocation, Boolean.parseBoolean(args[1]));
 
-        user.sendMessage("command_board_field_added", id);
+                return boardManager.saveBoard(board).thenAccept(success -> {
+                    Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
+                        if (success) {
+                            user.sendMessage("command_board_not_updated");
+                            return;
+                        }
+
+                        user.sendMessage("command_board_field_added", id);
+                    });
+                });
+            }).orElseGet(() -> {
+                user.sendMessage("command_board_not_found");
+                return CompletableFuture.completedFuture(null);
+            });
+        });
     }
 }

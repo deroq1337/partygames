@@ -29,31 +29,29 @@ public class PartyGamesPauseCommand implements CommandExecutor {
         }
 
         Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
-        if (optionalUser.isEmpty()) {
-            player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
-            return true;
-        }
+        optionalUser.ifPresentOrElse(user -> {
+            if (!player.hasPermission("partygames.pause")) {
+                user.sendMessage("no_permission");
+                return;
+            }
 
-        DefaultPartyGamesUser user = optionalUser.get();
-        if (!player.hasPermission("partygames.pause")) {
-            user.sendMessage("no_permission");
-            return true;
-        }
+            PartyGamesState gameState = game.getCurrentState();
+            if (!(gameState instanceof PartyGamesLobbyState lobbyState)) {
+                user.sendMessage("game_already_started");
+                return;
+            }
 
-        PartyGamesState gameState = game.getCurrentState();
-        if (!(gameState instanceof PartyGamesLobbyState lobbyState)) {
-            user.sendMessage("game_already_started");
-            return true;
-        }
+            Countdown countdown = lobbyState.getCountdown();
+            if (countdown.isRunning()) {
+                countdown.pause();
+                user.sendMessage("countdown_paused");
+                return;
+            }
 
-        Countdown countdown = lobbyState.getCountdown();
-        if (countdown.isRunning()) {
-            countdown.pause();
-            user.sendMessage("countdown_paused");
-        } else {
             countdown.unpause();
             user.sendMessage("countdown_resumed");
-        }
+        }, () -> player.sendMessage("§cAn error occurred. Rejoin or contact an administrator."));
+
         return true;
     }
 }

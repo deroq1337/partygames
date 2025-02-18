@@ -4,8 +4,11 @@ import com.github.deroq1337.partygames.core.data.game.PartyGamesGame;
 import com.github.deroq1337.partygames.core.data.game.board.PartyGamesBoard;
 import com.github.deroq1337.partygames.core.data.game.commands.board.PartyGamesBoardSubCommand;
 import com.github.deroq1337.partygames.core.data.game.user.DefaultPartyGamesUser;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.CompletableFuture;
 
 public class PartyGamesBoardCreateSubCommand extends PartyGamesBoardSubCommand {
 
@@ -21,16 +24,23 @@ public class PartyGamesBoardCreateSubCommand extends PartyGamesBoardSubCommand {
         }
 
         String boardName = args[0];
-        if (boardManager.getBoardByName(boardName).join().isPresent()) {
-            user.sendMessage("command_board_already_exists");
-            return;
-        }
 
-        if (!boardManager.saveBoard(new PartyGamesBoard(boardName)).join()) {
-            user.sendMessage("command_board_not_created");
-            return;
-        }
+        boardManager.getBoardByName(boardName).thenCompose(optionalBoard -> {
+            return optionalBoard.map(board -> {
+                user.sendMessage("command_board_already_exists");
+                return CompletableFuture.completedFuture((Void) null);
+            }).orElseGet(() -> {
+                return boardManager.saveBoard(new PartyGamesBoard(boardName)).thenAccept(success -> {
+                    Bukkit.getScheduler().runTask(game.getPartyGames(), () -> {
+                        if (!success) {
+                            user.sendMessage("command_board_not_created");
+                            return;
+                        }
 
-        user.sendMessage("command_board_created");
+                        user.sendMessage("command_board_created");
+                    });
+                });
+            });
+        });
     }
 }

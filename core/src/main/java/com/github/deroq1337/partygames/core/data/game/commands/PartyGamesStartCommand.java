@@ -28,41 +28,37 @@ public class PartyGamesStartCommand implements CommandExecutor {
             return true;
         }
 
-        Optional<DefaultPartyGamesUser> optionalUser = game.getUserRegistry().getUser(player.getUniqueId());
-        if (optionalUser.isEmpty()) {
-            player.sendMessage("§cAn error occurred. Rejoin or contact an administrator.");
-            return true;
-        }
+        game.getUserRegistry().getUser(player.getUniqueId()).ifPresentOrElse(user -> {
+            if (!player.hasPermission("partygames.start")) {
+                user.sendMessage("no_permission");
+                return;
+            }
 
-        DefaultPartyGamesUser user = optionalUser.get();
-        if (!player.hasPermission("partygames.start")) {
-            user.sendMessage("no_permission");
-            return true;
-        }
+            PartyGamesState gameState = game.getCurrentState();
+            if (!(gameState instanceof PartyGamesLobbyState lobbyState)) {
+                user.sendMessage("game_already_started");
+                return;
+            }
 
-        PartyGamesState gameState = game.getCurrentState();
-        if (!(gameState instanceof PartyGamesLobbyState lobbyState)) {
-            user.sendMessage("game_already_started");
-            return true;
-        }
+            if (!lobbyState.canStart()) {
+                user.sendMessage("not_enough_players");
+                return;
+            }
 
-        if (!lobbyState.canStart()) {
-            user.sendMessage("not_enough_players");
-            return true;
-        }
+            Countdown countdown = lobbyState.getCountdown();
+            if (countdown.getCurrentTick() <= 10) {
+                user.sendMessage("game_already_starting");
+                return;
+            }
 
-        Countdown countdown = lobbyState.getCountdown();
-        if (countdown.getCurrentTick() <= 10) {
-            user.sendMessage("game_already_starting");
-            return true;
-        }
+            countdown.setCurrentTick(10);
+            if (!countdown.isRunning()) {
+                countdown.setRunning(true);
+            }
 
-        countdown.setCurrentTick(10);
-        if (!countdown.isRunning()) {
-            countdown.setRunning(true);
-        }
+            user.sendMessage("game_force_started");
+        }, () -> player.sendMessage("§cAn error occurred. Rejoin or contact an administrator."));
 
-        user.sendMessage("game_force_started");
         return true;
     }
 }
